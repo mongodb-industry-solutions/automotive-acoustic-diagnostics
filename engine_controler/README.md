@@ -1,6 +1,8 @@
 # Setup
 
-RaspBerry Pi 5:
+![image](/media/RPi-Rele-Engine-schema.png)
+
+### RaspBerry Pi 5:
 
 
 
@@ -19,22 +21,20 @@ Memory: 1927MiB / 7943MiB
 ```
 
 
-Relay:
+### Relay:
 `KF-301 1 relay 5V module`
 Even thought the Relay name is 5V, it has to be connected to a 3.3V pin on the the RPi 5 for the power supply. 
 
-Engine:
+### Engine:
 `4-Cylinder Engine DM13 TECHING`
 
 
 # Pre-requisites 
 
-
-
-`sudo apt install gpiod libgpiod-dev libgpiod-doc libnode-dev`
-`node`
-`npm`
-`express`
-`node-libgpiod`
-`realm`
-`axios`
+- `sudo apt install gpiod libgpiod-dev libgpiod-doc libnode-dev`
+- `node`
+- `npm`
+- `express`
+- `node-libgpiod`
+- `realm`
+- `axios`
