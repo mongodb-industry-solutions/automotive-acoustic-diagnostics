@@ -1,0 +1,26 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+#dashboard-container {
+    width: 100%;
+    height: 600px; /* Adjust as necessary */
+    border-bottom: 2px solid #ccc;
+}
+
+#messages-container {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    height: calc(90vh - 620px); /* Adjust based on dashboard height */
+    overflow-y: auto;
+}
+
+.message {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-bottom: 10px;
+}
