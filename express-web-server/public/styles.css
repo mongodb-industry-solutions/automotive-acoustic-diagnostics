@@ -2,25 +2,31 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
+    background-color: #F2F5F4;
 }
 
 #dashboard-container {
     width: 100%;
-    height: 600px; /* Adjust as necessary */
-    border-bottom: 2px solid #ccc;
+    height: 650px; /* Adjust as necessary */
 }
 
 #messages-container {
     margin: 20px;
     padding: 10px;
-    border: 1px solid #ccc;
-    height: calc(90vh - 620px); /* Adjust based on dashboard height */
+    
+    height: calc(90vh - 650px); /* Adjust based on dashboard height */
     overflow-y: auto;
 }
 
 .message {
-    background-color: #f4f4f4;
-    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 10px;
     padding: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add box shadow */
 }
+
+h2{
+    margin-left: 20px;
+}
+
