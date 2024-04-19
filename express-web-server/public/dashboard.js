@@ -1,4 +1,5 @@
 // import ChartsEmbedSDK from '@mongodb-js/charts-embed-dom';
+
 document.addEventListener('DOMContentLoaded', function() {
     const sdk = new ChartsEmbedSDK({
         baseUrl: 'https://charts.mongodb.com/charts-myiot-rweli' // Replace with your actual URL
