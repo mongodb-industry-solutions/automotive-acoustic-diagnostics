@@ -13,6 +13,7 @@ const vehicle_dataSchema = {
 		Hood_Open: 'bool',
 		LightsOn: 'bool',
 		Vehicle_Name: 'string?',
+		Engine_Status: 'string?'
 	},
 	primaryKey: '_id',
 };
