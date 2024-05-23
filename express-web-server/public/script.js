@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 messagesContainer.innerHTML = ''; // Clear existing messages
-                data.forEach(msg => {
+                data.reverse().forEach(msg => {
                     const messageDiv = document.createElement('div');
                     messageDiv.classList.add('message');
                     const formattedMessage = msg.replace(/\n/g, '<br>');
