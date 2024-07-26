@@ -1,7 +1,5 @@
 # Acoustic-based Diagnostics using MongoDB Vector Search
 Demonstration of MongoDB's Vector Search capabilities for anomaly detection through sound input. This demo enables real-time diagnosis by analyzing the emitted audio, allowing us to diagnose its condition—whether it's operating normally, stopped, or experiencing any issues.
- 
-![Architecture](architecture1.png)
 
 ## 1. MongoDB Atlas Connection
 Create a file called `.env` in the main directory alongside the `add_audio.py` file and add your atlas connection string, in the following format:  
