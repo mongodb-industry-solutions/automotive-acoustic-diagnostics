@@ -2,3 +2,7 @@ certifi
 pymongo
 python-dotenv
 pynput
+pyaudio
+numpy
+panns_inference
+torch
