@@ -58,7 +58,7 @@ def check_sensor():
             turn_engine_on()
 
 def check_battery():
-    if vehicle.data and vehicle.data.Battery_Current <= 0:
+    if vehicle.data and vehicle.data.Battery_Current <= 0 and vehicle.data.LightsOn:
         turn_engine_off()
 
 def main():
