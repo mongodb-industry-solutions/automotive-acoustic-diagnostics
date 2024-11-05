@@ -16,13 +16,13 @@ green = LED(13)  # Green LED connected to GPIO pin 13
 relay = LED(16) # Relay connected to GPIO pin 16
 relay.value = 1
 
-def set_engine_on(turnOn):
+def update_relay(turnOn):
     if turnOn:
         relay.off()  # Turn on the engine
     else:
         relay.on()   # Turn off the engine
 
-def set_engine_status(status):
+def update_leds(status):
     if status == 'Running Normally':
         green.on()  
         yellow.off()  
@@ -41,13 +41,9 @@ def set_engine_status(status):
         red.off()
 
 def check_sensor():
-    if not vehicle.data:
-        print("Vehicle data not found.")
-        return
-    elif sensor.is_active:
-        print("No obstacle detected")
-    else:
-        if vehicle.data.LightsOn:
+
+    if vehicle.data and not sensor.is_active:
+        if vehicle.data.LightsOn or vehicle.data.Battery_Current == 0:
             print("Turning off")
             vehicle.set_lights_on(False)
             vehicle.set_engine_status("Engine Off")
@@ -55,7 +51,6 @@ def check_sensor():
             print("Turning on")
             vehicle.set_lights_on(True)
             vehicle.set_engine_status("Running Normally")
-        print("Obstacle detected")
 
 
 def main():
@@ -67,12 +62,17 @@ def main():
     change_stream_thread.daemon = True  # Allows the thread to exit when the main program does
     change_stream_thread.start()
 
+    # Start the telemetry simulation in a separate thread
+    telemetry_thread = threading.Thread(target=vehicle.simulate_telemetry)
+    telemetry_thread.daemon = True
+    telemetry_thread.start()
+
     while True:
         check_sensor()
 
         if vehicle.data:
-            set_engine_on(vehicle.data.LightsOn)
-            set_engine_status(vehicle.data.Engine_Status)
+            update_relay(vehicle.data.LightsOn)
+            update_leds(vehicle.data.Engine_Status)
 
         sleep(1)
 
