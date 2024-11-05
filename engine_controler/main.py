@@ -29,11 +29,9 @@ def check_sensor():
     else:
         if vehicle.data.LightsOn:
             print("Turning off")
-            set_engine_status("stop")
             vehicle.set_lights_on(False)
         else:
             print("Turning on")
-            set_engine_status("start")
             vehicle.set_lights_on(True)
         print("Obstacle detected")
 
@@ -42,13 +40,14 @@ def main():
     vehicle.initial_sync()  # Load vehicle data from MongoDB
     print(vehicle.data.__dict__)
 
-    if vehicle.data and vehicle.data.LightsOn:
-        set_engine_status("start")
-    else:
-        set_engine_status("stop")
-
     while True:
         check_sensor()
+
+        if vehicle.data and vehicle.data.LightsOn:
+            set_engine_status("start")
+        else:
+            set_engine_status("stop")
+
         sleep(1)
 
 if __name__ == "__main__":
