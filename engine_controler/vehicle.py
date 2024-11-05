@@ -51,28 +51,24 @@ def set_engine_status(status):
     else:
         print("Vehicle data is not initialized. Cannot update Engine_Status.")
 
-def set_telemetry(current_change, temperature_change):
+def set_telemetry(current, temperature):
     global data
     if data:
-        # Calculate the new telemetry values
-        new_current = max(data.Battery_Current - current_change, 0)
-        new_temp = data.Battery_Temp + temperature_change
-
         # Update MongoDB
         coll.update_one(
             {"_id": ObjectId(VEHICLE_ID)},
             {
                 "$set": {
-                    "Battery_Current": new_current,
-                    "Battery_Temp": new_temp
+                    "Battery_Current": current,
+                    "Battery_Temp": temperature
                 }
             }
         )
 
         # Update local vehicle data only
-        data.Battery_Current = new_current
-        data.Battery_Temp = new_temp
-        print(f"Telemetry updated - Battery_Current: {new_current}, Battery_Temp: {new_temp}")
+        data.Battery_Current = current
+        data.Battery_Temp = temperature
+        print(f"Telemetry updated - Battery_Current: {current}, Battery_Temp: {temperature}")
     else:
         print("Vehicle data is not initialized. Cannot update telemetry.")
 
@@ -92,7 +88,7 @@ def monitor_changes():
 
 def simulate_telemetry():
     global data
-    
+
     while True:
         # Only update telemetry if LightsOn is True
         if data and data.LightsOn:
@@ -100,6 +96,10 @@ def simulate_telemetry():
             current_change = random.randint(0, 5)
             temperature_change = random.randint(-2, 3)
 
-            set_telemetry(current_change, temperature_change)
+            # Calculate the new telemetry values
+            new_current = max(data.Battery_Current - current_change, 0)
+            new_temp = data.Battery_Temp + temperature_change
+
+            set_telemetry(new_current, new_temp)
 
         sleep(2)

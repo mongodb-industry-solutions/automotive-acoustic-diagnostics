@@ -40,21 +40,31 @@ def update_leds(status):
         yellow.off()  
         red.off()
 
+def turn_engine_on():
+    print("Turning on")
+    vehicle.set_lights_on(True)
+    vehicle.set_engine_status("Running Normally")
+
+def turn_engine_off():
+    print("Turning off")
+    vehicle.set_lights_on(False)
+    vehicle.set_engine_status("Engine Off")
+
 def check_sensor():
-
     if vehicle.data and not sensor.is_active:
-        if vehicle.data.LightsOn or vehicle.data.Battery_Current == 0:
-            print("Turning off")
-            vehicle.set_lights_on(False)
-            vehicle.set_engine_status("Engine Off")
+        if vehicle.data.LightsOn:
+            turn_engine_off()
         else:
-            print("Turning on")
-            vehicle.set_lights_on(True)
-            vehicle.set_engine_status("Running Normally")
+            turn_engine_on()
 
+def check_battery():
+    if vehicle.data and vehicle.data.Battery_Current <= 0:
+        turn_engine_off()
 
 def main():
     vehicle.initial_sync()  # Load vehicle data from MongoDB
+    vehicle.set_telemetry(100,15) # Initialize telemetry data
+    
     print(vehicle.data.__dict__)
 
     # Start the change stream in a separate thread
@@ -69,6 +79,7 @@ def main():
 
     while True:
         check_sensor()
+        check_battery()
 
         if vehicle.data:
             update_relay(vehicle.data.LightsOn)
