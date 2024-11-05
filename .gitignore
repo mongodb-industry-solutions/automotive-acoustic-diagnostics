@@ -3,3 +3,5 @@ engine_controler/realm/config.js
 .env
 node_modules
 **/**.pyc
+**/.venv
+**/node_modules
