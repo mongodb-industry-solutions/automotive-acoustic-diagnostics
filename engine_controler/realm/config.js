@@ -1,4 +1,4 @@
-const appID = "connected-vehicle-edge-server-cbvdz"
+const appID = "connected-vehicle-migration-luuqbnh"
 
 const realmUser = {
 	username: "demo",
