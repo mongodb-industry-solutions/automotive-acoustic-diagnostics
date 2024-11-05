@@ -36,3 +36,16 @@ def set_lights_on(status):
         print(f"Updated LightsOn status to {status} in MongoDB and vehicle data.")
     else:
         print("Vehicle data is not initialized. Cannot update LightsOn status.")
+
+def monitor_changes():
+    global data
+    with coll.watch() as change_stream:
+        for change in change_stream:
+            if change['operationType'] == 'update':
+                updated_fields = change['updateDescription']['updatedFields']
+                if 'LightsOn' in updated_fields:
+                    # Update the global vehicle data LightsOn status
+                    new_status = updated_fields['LightsOn']
+                    if data and new_status != data.LightsOn:
+                        data.LightsOn = new_status
+                        print(f"Detected change in LightsOn status: {new_status}")

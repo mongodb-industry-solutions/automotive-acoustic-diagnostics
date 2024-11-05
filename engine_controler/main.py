@@ -1,5 +1,6 @@
 from gpiozero import InputDevice, LED
 from time import sleep
+import threading
 import vehicle
 
 # Initialize the sensor as a digital input device on GPIO 4
@@ -39,6 +40,11 @@ def check_sensor():
 def main():
     vehicle.initial_sync()  # Load vehicle data from MongoDB
     print(vehicle.data.__dict__)
+
+    # Start the change stream in a separate thread
+    change_stream_thread = threading.Thread(target=vehicle.monitor_changes)
+    change_stream_thread.daemon = True  # Allows the thread to exit when the main program does
+    change_stream_thread.start()
 
     while True:
         check_sensor()
