@@ -37,15 +37,28 @@ def set_lights_on(status):
     else:
         print("Vehicle data is not initialized. Cannot update LightsOn status.")
 
+def set_engine_status(status):
+    global data
+    if data:
+        # Update the Engine_Status field in MongoDB
+        coll.update_one({"_id": ObjectId(VEHICLE_ID)}, {"$set": {"Engine_Status": status}})
+        
+        # Update the global vehicle data only after the write is confirmed
+        data.Engine_Status = status
+        print(f"Updated Engine_Status to {status} in MongoDB and vehicle data.")
+    else:
+        print("Vehicle data is not initialized. Cannot update Engine_Status.")
+
 def monitor_changes():
     global data
     with coll.watch() as change_stream:
         for change in change_stream:
             if change['operationType'] == 'update':
                 updated_fields = change['updateDescription']['updatedFields']
-                if 'LightsOn' in updated_fields:
-                    # Update the global vehicle data LightsOn status
-                    new_status = updated_fields['LightsOn']
-                    if data and new_status != data.LightsOn:
-                        data.LightsOn = new_status
-                        print(f"Detected change in LightsOn status: {new_status}")
+                
+                for field, new_value in updated_fields.items():
+                    if hasattr(data, field):
+                        current_value = getattr(data, field)
+                        if current_value != new_value:
+                            setattr(data, field, new_value)
+                            print(f"Detected change in {field}: {new_value}")

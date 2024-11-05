@@ -11,15 +11,34 @@ is_engine_on = False
 red = LED(12)    # Red LED connected to GPIO pin 12
 yellow = LED(6) # Yellow LED connected to GPIO pin 6
 green = LED(13)  # Green LED connected to GPIO pin 13
+
+# Intialize relay
 relay = LED(16) # Relay connected to GPIO pin 16
 relay.value = 1
 
-def set_engine_status(status):
-    """Control relay based on the engine status."""
-    if status == "start":
+def set_engine_on(turnOn):
+    if turnOn:
         relay.off()  # Turn on the engine
     else:
         relay.on()   # Turn off the engine
+
+def set_engine_status(status):
+    if status == 'Running Normally':
+        green.on()  
+        yellow.off()  
+        red.off()  
+    elif status == 'Soft Material Hit':
+        green.off()  
+        yellow.on()  
+        red.off()  
+    elif status == 'Metallic Hit':
+        green.off()  
+        yellow.off()  
+        red.on()
+    else:
+        green.off()  
+        yellow.off()  
+        red.off()
 
 def check_sensor():
     if not vehicle.data:
@@ -31,9 +50,11 @@ def check_sensor():
         if vehicle.data.LightsOn:
             print("Turning off")
             vehicle.set_lights_on(False)
+            vehicle.set_engine_status("Engine Off")
         else:
             print("Turning on")
             vehicle.set_lights_on(True)
+            vehicle.set_engine_status("Running Normally")
         print("Obstacle detected")
 
 
@@ -49,10 +70,9 @@ def main():
     while True:
         check_sensor()
 
-        if vehicle.data and vehicle.data.LightsOn:
-            set_engine_status("start")
-        else:
-            set_engine_status("stop")
+        if vehicle.data:
+            set_engine_on(vehicle.data.LightsOn)
+            set_engine_status(vehicle.data.Engine_Status)
 
         sleep(1)
 
