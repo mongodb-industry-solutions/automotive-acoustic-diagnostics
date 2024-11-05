@@ -30,30 +30,38 @@ def initial_sync():
 def set_lights_on(status):
     global data
     if data:
+        # Update the global vehicle data
+        data.LightsOn = status
+
         # Update the LightsOn field in MongoDB
         coll.update_one({"_id": ObjectId(VEHICLE_ID)}, {"$set": {"LightsOn": status}})
         
-        # Update the global vehicle data
-        data.LightsOn = status
         print(f"Updated LightsOn to {status}.")
     else:
         print("Vehicle data is not initialized. Cannot update LightsOn.")
 
 def set_engine_status(status):
     global data
+
     if data:
+        # Update the global vehicle data
+        data.Engine_Status = status
+
         # Update the Engine_Status field in MongoDB
         coll.update_one({"_id": ObjectId(VEHICLE_ID)}, {"$set": {"Engine_Status": status}})
         
-        # Update the global vehicle data
-        data.Engine_Status = status
         print(f"Updated Engine_Status to {status}.")
     else:
         print("Vehicle data is not initialized. Cannot update Engine_Status.")
 
 def set_telemetry(current, temperature):
     global data
+
     if data:
+        # Update local vehicle data
+        data.Battery_Current = current
+        data.Battery_Temp = temperature
+
         # Update MongoDB
         coll.update_one(
             {"_id": ObjectId(VEHICLE_ID)},
@@ -64,10 +72,7 @@ def set_telemetry(current, temperature):
                 }
             }
         )
-
-        # Update local vehicle data only
-        data.Battery_Current = current
-        data.Battery_Temp = temperature
+        
         print(f"Telemetry updated - Battery_Current: {current}, Battery_Temp: {temperature}")
     else:
         print("Vehicle data is not initialized. Cannot update telemetry.")
@@ -97,7 +102,7 @@ def simulate_telemetry():
             temperature_change = random.randint(-2, 3)
 
             # Calculate the new telemetry values
-            new_current = max(data.Battery_Current - current_change, 0)
+            new_current = max(data.Battery_Current - current_change, 10) # Demo mode: Avoid reaching 0 to dont stop demo
             new_temp = data.Battery_Temp + temperature_change
 
             set_telemetry(new_current, new_temp)
