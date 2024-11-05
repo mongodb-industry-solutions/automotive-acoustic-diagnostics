@@ -3,7 +3,7 @@ from time import sleep
 
 # Initialize the sensor as a digital input device on GPIO 4
 sensor = InputDevice(4)
-sensor_status = True
+is_engine_on = False
 
 # Initialize LED pins
 red = LED(12)    # Red LED connected to GPIO pin 12
@@ -19,21 +19,24 @@ def set_engine_status(status):
         relay.on()   # Turn off the engine
 
 def check_sensor():
-    global sensor_status
+    global is_engine_on
     if sensor.is_active:
         print("No obstacle detected")
     else:
-        if sensor_status:
-            set_engine_status("start")
-            sensor_status = False
-        else:
+        if is_engine_on:
+            print("Turning off")
             set_engine_status("stop")
-            sensor_status = True
+            is_engine_on = False
+        else:
+            print("Turning on")
+            set_engine_status("start")
+            is_engine_on = True
         print("Obstacle detected")
 
 
 def main():
 
+    set_engine_status("stop")
     while True:
         check_sensor()
         sleep(1)
