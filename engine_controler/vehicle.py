@@ -24,3 +24,15 @@ def initial_sync():
         data = Vehicle(vehicle_data)
     else:
         print("Vehicle data not found.")
+
+def set_lights_on(status):
+    global data
+    if data:
+        # Update the LightsOn field in MongoDB
+        coll.update_one({"_id": ObjectId(VEHICLE_ID)}, {"$set": {"LightsOn": status}})
+        
+        # Update the global vehicle data only after the write is confirmed
+        data.LightsOn = status
+        print(f"Updated LightsOn status to {status} in MongoDB and vehicle data.")
+    else:
+        print("Vehicle data is not initialized. Cannot update LightsOn status.")
