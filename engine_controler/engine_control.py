@@ -1,5 +1,6 @@
 from gpiozero import InputDevice, LED
 from time import sleep
+from database import initial_sync, vehicle
 
 # Initialize the sensor as a digital input device on GPIO 4
 sensor = InputDevice(4)
@@ -19,24 +20,27 @@ def set_engine_status(status):
         relay.on()   # Turn off the engine
 
 def check_sensor():
-    global is_engine_on
-    if sensor.is_active:
+    global vehicle
+
+    if not vehicle:
+        print("Vehicle data not found.")
+        return
+    elif sensor.is_active:
         print("No obstacle detected")
     else:
-        if is_engine_on:
+        if vehicle.LightsOn:
             print("Turning off")
             set_engine_status("stop")
-            is_engine_on = False
+            vehicle.LightsOn = False
         else:
             print("Turning on")
             set_engine_status("start")
-            is_engine_on = True
+            vehicle.LightsOn = True
         print("Obstacle detected")
 
 
 def main():
-
-    set_engine_status("stop")
+    initial_sync()  # Load vehicle data from MongoDB
     while True:
         check_sensor()
         sleep(1)
