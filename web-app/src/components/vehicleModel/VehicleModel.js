@@ -8,6 +8,17 @@ const VehicleModel = () => {
     const [vehicleData, setVehicleData] = useState({});
     const [sseConnection, setSSEConnection] = useState(null)
 
+    const fetchInitialData = async () => {
+        try {
+          const response = await fetch('/api/getVehicleData');
+          const data = await response.json();
+          console.log('Initial data:', data);
+          setVehicleData(data);
+        } catch (error) {
+          console.error('Error fetching initial data:', error);
+        }
+    };
+
     const listenToSSEUpdates = useCallback(() => {
         console.log('listenToSSEUpdates func')
         const eventSource = new EventSource('/api/sse')
@@ -20,12 +31,14 @@ const VehicleModel = () => {
         eventSource.onmessage = (event) => {
           const data = JSON.parse(event.data);
           console.log('Received SSE Update:', data);
-          // Update your UI or do other processing with the received data
+          setVehicleData((prevData) => ({
+            ...prevData,
+            ...data.updateDescription.updatedFields,
+          }));
         }
     
         eventSource.onerror = (event) => {
           console.error('SSE Error:', event);
-          // Handle the SSE error here
         }
         setSSEConnection(eventSource);
     
@@ -33,6 +46,7 @@ const VehicleModel = () => {
       }, []);
 
     useEffect(() => {
+        fetchInitialData();
         const eventSource = listenToSSEUpdates();
 
         return () => {
@@ -61,17 +75,18 @@ const VehicleModel = () => {
 
   return (
     <div className="vehicle-container">
-        <h1></h1>
+        <h1>Vehicle: {vehicleData.Vehicle_Name}</h1>
         <img className="vehicle-image" src="/vehicle/new_car.png" alt="Image of vehicle"/>
-        <p className="voltage">Voltage: </p>
-        <p className="current">Current: </p>
-        <p className="ison">is on</p>
-        <img className="engine-image" src="/vehicle/engine_off.png" alt="Engine GIF" />
-        <p className="vin"></p>
+        <p className="voltage">Battery Temperature: {vehicleData.Battery_Temp}</p>
+        <p className="current">Battery Charge: {vehicleData.Battery_Current}</p>
+        <p className="ison">Is on: {vehicleData.LightsOn ? "On" : "Off" }</p>
+        <img className="engine-image" src={vehicleData.LightsOn ? "/vehicle/engine_on.gif" : "/vehicle/engine_off.png"} alt="Engine Image" />
+        <p className="vin">{vehicleData._id}</p>
         <div className="alert-section">
-            <img className="alert-image" src="/vehicle/alert_icon_gray.png" alt="Alert Icon" />
+            <img className="alert-image" src={vehicleData.Battery_Status_OK ? "/vehicle/alert_icon_gray.png" : "/vehicle/alert_icon_red.png"} alt="Alert Icon" />
             <h3 className="alert-tooltip"></h3>
         </div>
+        <div>{JSON.stringify(vehicleData)}</div>
     </div>
   );
 };
