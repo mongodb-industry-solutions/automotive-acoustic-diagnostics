@@ -23,7 +23,7 @@ const OverviewComp = () => {
 
                 <Card className={styles.card}>
                     <a className={styles.title} href="https://www.mongodb.com/resources/solutions/use-cases/generative-ai-predictive-maintenance-applications">
-                        <img src="/read.png" className={styles.image} alt="Retail"></img>
+                        <img src="/logos/read.png" className={styles.image} alt="Retail"></img>
                         <H3 className={styles.title}>White Paper</H3>
                     </a>
                     <Description className={styles.description}> Learn more about using generative AI to achieve maintenance excellence. 
@@ -43,7 +43,7 @@ const OverviewComp = () => {
 
                 <Card className={styles.card}>
                     <a className={styles.title} href="https://github.com/mongodb-industry-solutions/Predictive-Maintenance-Hosted">
-                        <img src="/github.png" className={styles.image} alt="Insurance"></img>
+                        <img src="/logos/github.png" className={styles.image} alt="Insurance"></img>
                         <H3 className={styles.title}>Github Repo</H3>
                     </a>
                     <Description className={styles.description}> Follow the step-by-step guide and play around with the demo yourself.
@@ -60,7 +60,7 @@ const OverviewComp = () => {
 
                 <Card className={styles.card}>
                     <a className={styles.title} href="https://www.youtube.com/watch?v=YwTWpUl3QS8">
-                        <img src="/youtube.png" className={styles.image} alt="Insurance"></img>
+                        <img src="/logos/youtube.png" className={styles.image} alt="Insurance"></img>
                         <H3 className={styles.title}>YouTube Video</H3>
                     </a>
                     <Description className={styles.description}> Explore how MongoDB can be leveraged to create a comprehensive predictive maintenance strategy for the manufacturing and automotive industries.

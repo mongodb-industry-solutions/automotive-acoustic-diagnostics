@@ -9,7 +9,7 @@ const Navbar = () => {
       <div className={styles.logo}>
         <Link href="/">
           <Image
-            src="/logo.png"
+            src="/logos/logo.png"
             alt="MongoDB logo"
             className={styles.logoImage}
             width={240}
@@ -22,9 +22,9 @@ const Navbar = () => {
 
       <div className={styles.links}>
         <Link href="/">Demo Overview</Link>
-        <Link href="/equipment-criticality-analysis">Digital Twin</Link>
-        <Link href="/failure-prediction">Acoustic Diagnostics</Link>
-        <Link href="/repair-plan-generation">Analytics Dashboard</Link>
+        <Link href="/digital-twin">Digital Twin</Link>
+        <Link href="/acoustic-diagnostics">Acoustic Diagnostics</Link>
+        <Link href="/analytics">Analytics Dashboard</Link>
       </div>
 
       <UserProfile></UserProfile>
