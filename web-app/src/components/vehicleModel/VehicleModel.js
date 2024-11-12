@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from 'react'
+import Button from '@leafygreen-ui/button';
 import styles from "./vehicleModel.module.css";
 
 const VehicleModel = () => {
@@ -30,7 +31,7 @@ const VehicleModel = () => {
     
         eventSource.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          console.log('Received SSE Update:', data);
+          //console.log('Received SSE Update:', data);
           setVehicleData((prevData) => ({
             ...prevData,
             ...data.updateDescription.updatedFields,
@@ -73,6 +74,29 @@ const VehicleModel = () => {
         }
       }, [sseConnection]);
 
+      const resetBattery = async () => {
+        try {
+            const response = await fetch(`/api/updateVehicleData`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    Battery_Temp: 24,
+                    Battery_Current: 100,
+                    Battery_Status_OK: true,
+                }),
+            });
+            if (response.ok) {
+                console.log('Battery reset successfully');
+            } else {
+                console.error('Failed to reset battery');
+            }
+        } catch (error) {
+            console.error('Error resetting battery:', error);
+        }
+    };
+
   return (
     <div className="vehicle-container">
         <h1>Vehicle: {vehicleData.Vehicle_Name}</h1>
@@ -87,6 +111,7 @@ const VehicleModel = () => {
             <h3 className="alert-tooltip"></h3>
         </div>
         <div>{JSON.stringify(vehicleData)}</div>
+        <Button onClick={resetBattery}>Reset Battery</Button>
     </div>
   );
 };

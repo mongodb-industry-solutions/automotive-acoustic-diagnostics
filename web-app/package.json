@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@leafygreen-ui/button": "^21.3.0",
     "@leafygreen-ui/card": "^11.0.0",
     "@leafygreen-ui/typography": "^19.3.0",
     "mongodb": "^6.10.0",
