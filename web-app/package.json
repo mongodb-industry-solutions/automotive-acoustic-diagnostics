@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -11,6 +11,10 @@
   "dependencies": {
     "@leafygreen-ui/button": "^21.3.0",
     "@leafygreen-ui/card": "^11.0.0",
+    "@leafygreen-ui/leafygreen-provider": "^3.1.12",
+    "@leafygreen-ui/select": "^12.1.6",
+    "@leafygreen-ui/stepper": "^3.2.13",
+    "@leafygreen-ui/toast": "^6.1.27",
     "@leafygreen-ui/typography": "^19.3.0",
     "mongodb": "^6.10.0",
     "next": "15.0.2",
