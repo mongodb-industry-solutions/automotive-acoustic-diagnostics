@@ -14,7 +14,7 @@ const options = { appName: "automotive-acoustic-diagnostics" };
 
 let client;
 let clientPromise;
-let changeStream;
+const changeStreams = new Map();
 
 if (!global._mongoClientPromise) {
   client = new MongoClient(uri, options);
@@ -24,15 +24,15 @@ if (!global._mongoClientPromise) {
   clientPromise = global._mongoClientPromise;
 }
 
-async function getChangeStream(filter) {
-  if (!changeStream) {
+async function getChangeStream(filter, key) {
+  if (!changeStreams.has(key)) {
     const client = await clientPromise;
     const db = client.db(dbName);
 
     const filterEJSON = EJSON.parse(JSON.stringify(filter));
 
     const pipeline = [{ $match: filterEJSON }];
-    changeStream = db.watch(pipeline);
+    const changeStream = db.watch(pipeline);
 
     changeStream.on("change", (change) => {
       console.log("Change: ", change);
@@ -41,8 +41,10 @@ async function getChangeStream(filter) {
     changeStream.on("error", (error) => {
       console.log("Error: ", error);
     });
+
+    changeStreams.set(key, changeStream);
   }
-  return changeStream;
+  return changeStreams.get(key);
 }
 
 export { clientPromise, getChangeStream };

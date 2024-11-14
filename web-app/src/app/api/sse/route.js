@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 
 const HEARTBEAT_INTERVAL = 5000; // Keep alive interval in milliseconds
 
-let currentChangeStream = null;
-let currentChangeListener = null;
+const changeStreams = new Map();
+const changeListeners = new Map();
 
 export async function GET(req) {
   // Check if the client accepts SSE
@@ -22,18 +22,18 @@ export async function GET(req) {
 
     // Parse the URL to get query parameters
     const url = new URL(req.url);
+    const sessionId = url.searchParams.get("sessionId");
     const colName = url.searchParams.get("colName");
-    const vehicleId = url.searchParams.get("vehicleId");
+    const _id = url.searchParams.get("_id");
 
     // Check if required parameters are provided
-    if (!colName || !vehicleId) {
-      // If parameters are missing, close the current change stream if it exists
-      if (currentChangeStream) {
-        currentChangeStream.off("change", currentChangeListener);
-        currentChangeStream = null; // Reset the current change stream
-      }
-      return new NextResponse("Missing required parameters", { status: 400 });
+    if (!sessionId) {
+      return new NextResponse("Missing required parameter: clientId", {
+        status: 400,
+      });
     }
+
+    const key = sessionId;
 
     const intervalId = setInterval(() => {
       // Send a heartbeat message to keep the connection alive
@@ -58,28 +58,34 @@ export async function GET(req) {
       }
     };
 
-    const filter = {
-      "ns.coll": colName,
-      "documentKey._id": { $oid: vehicleId },
-    };
+    const filter = {};
+    if (colName) {
+      filter["ns.coll"] = colName;
+    }
+    if (_id) {
+      filter["documentKey._id"] = { $oid: _id };
+    }
 
-    currentChangeStream = await getChangeStream(filter);
+    const changeStream = await getChangeStream(filter, key);
 
-    currentChangeListener = (change) => {
+    const changeListener = (change) => {
       // Notify the client about the change
       sendUpdate(change);
     };
 
-    currentChangeStream.on("change", currentChangeListener);
+    changeStream.on("change", changeListener);
+    changeStreams.set(key, changeStream);
+    changeListeners.set(key, changeListener);
 
     // Handle client disconnect
     req.signal.addEventListener("abort", () => {
       // Clean up resources and stop sending updates when the client disconnects
       console.log("Client disconnected");
       clearInterval(intervalId);
-      if (currentChangeStream) {
-        currentChangeStream.off("change", currentChangeListener);
-        currentChangeStream = null; // Reset the current change stream
+      if (changeStreams.has(key)) {
+        changeStreams.get(key).off("change", changeListeners.get(key));
+        changeStreams.delete(key);
+        changeListeners.delete(key);
       }
       writer.close().catch((error) => {
         console.error("Error closing writer:", error);

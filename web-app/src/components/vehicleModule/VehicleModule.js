@@ -4,25 +4,32 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import Button from "@leafygreen-ui/button";
 import { Select, Option } from "@leafygreen-ui/select";
 import Image from "next/image";
-import styles from "./vehicleModel.module.css";
+import styles from "./vehicleModule.module.css";
+import { v4 as uuidv4 } from "uuid";
 
-const VehicleModel = () => {
+const VehicleModule = () => {
   const [vehicles, setVehicles] = useState([]);
   const [vehicleData, setVehicleData] = useState(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
   const sseConnection = useRef(null);
 
   const collection = "vehicle_data";
+  const sessionId = useRef(uuidv4()); //unique id for this session
 
   const listenToSSEUpdates = useCallback(() => {
     if (!selectedVehicleId) return;
 
     console.log(
-      "Listening to SSE updates for collection" + collection + "and vehicle",
+      "Listening to SSE updates for collection " + collection + " and vehicle ",
       selectedVehicleId
     );
     const eventSource = new EventSource(
-      "/api/sse?colName=" + collection + "&vehicleId=" + selectedVehicleId
+      "/api/sse?sessionId=" +
+        sessionId +
+        "colName=" +
+        collection +
+        "&_id=" +
+        selectedVehicleId
     );
 
     eventSource.onopen = () => {
@@ -222,4 +229,4 @@ const VehicleModel = () => {
   );
 };
 
-export default VehicleModel;
+export default VehicleModule;
