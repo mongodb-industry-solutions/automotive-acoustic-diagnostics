@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata = {
   title: "Automotive Acoustic Diagnostics",
-  description: "A manufacturing and automotive demo by MongoDB Industry Solutions",
+  description:
+    "A manufacturing and automotive demo by MongoDB Industry Solutions",
 };
 
 export default function RootLayout({ children }) {

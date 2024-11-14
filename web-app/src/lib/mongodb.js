@@ -1,4 +1,5 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
+import { EJSON } from "bson";
 
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
@@ -6,17 +7,14 @@ if (!process.env.MONGODB_URI) {
 if (!process.env.DATABASE_NAME) {
   throw new Error('Invalid/Missing environment variable: "DATABASE_NAME"');
 }
-if (!process.env.VEHICLE_ID) {
-  throw new Error('Invalid/Missing environment variable: "VEHICLE_ID"');
-}
 
-// MongoDB client setup
 const uri = process.env.MONGODB_URI;
+const dbName = process.env.DATABASE_NAME;
 const options = { appName: "automotive-acoustic-diagnostics" };
 
 let client;
 let clientPromise;
-let vehicleDataChangeStream;
+let changeStream;
 
 if (!global._mongoClientPromise) {
   client = new MongoClient(uri, options);
@@ -26,27 +24,25 @@ if (!global._mongoClientPromise) {
   clientPromise = global._mongoClientPromise;
 }
 
-async function getVehicleDataChangeStream() {
-  if (!vehicleDataChangeStream) {
-    const dbName = process.env.DATABASE_NAME;
-    const vehicleId = process.env.VEHICLE_ID;
-
+async function getChangeStream(filter) {
+  if (!changeStream) {
     const client = await clientPromise;
-    const database = client.db(dbName);
-    const vehicleDataCollection = database.collection("vehicle_data");
+    const db = client.db(dbName);
 
-    const pipeline = [ { $match: { 'documentKey._id': new ObjectId(vehicleId) } } ];
-    vehicleDataChangeStream = vehicleDataCollection.watch(pipeline);
+    const filterEJSON = EJSON.parse(JSON.stringify(filter));
 
-    vehicleDataChangeStream.on('change', (change) => {
-      console.log('Change: ', change);
+    const pipeline = [{ $match: filterEJSON }];
+    changeStream = db.watch(pipeline);
+
+    changeStream.on("change", (change) => {
+      console.log("Change: ", change);
     });
 
-    vehicleDataChangeStream.on('error', (error) => {
-      console.log('Error: ', error);
+    changeStream.on("error", (error) => {
+      console.log("Error: ", error);
     });
   }
-  return vehicleDataChangeStream;
+  return changeStream;
 }
 
-export { clientPromise, getVehicleDataChangeStream };
+export { clientPromise, getChangeStream };

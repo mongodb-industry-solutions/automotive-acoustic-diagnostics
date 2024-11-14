@@ -1,117 +1,223 @@
 "use client";
 
-import { useCallback, useEffect, useState } from 'react'
-import Button from '@leafygreen-ui/button';
+import { useCallback, useEffect, useState, useRef } from "react";
+import Button from "@leafygreen-ui/button";
+import { Select, Option } from "@leafygreen-ui/select";
+import Image from "next/image";
 import styles from "./vehicleModel.module.css";
 
 const VehicleModel = () => {
+  const [vehicles, setVehicles] = useState([]);
+  const [vehicleData, setVehicleData] = useState(null);
+  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+  const sseConnection = useRef(null);
 
-    const [vehicleData, setVehicleData] = useState({});
-    const [sseConnection, setSSEConnection] = useState(null)
+  const collection = "vehicle_data";
 
-    const fetchInitialData = async () => {
-        try {
-          const response = await fetch('/api/getVehicleData');
-          const data = await response.json();
-          console.log('Initial data:', data);
-          setVehicleData(data);
-        } catch (error) {
-          console.error('Error fetching initial data:', error);
-        }
+  const listenToSSEUpdates = useCallback(() => {
+    if (!selectedVehicleId) return;
+
+    console.log(
+      "Listening to SSE updates for collection" + collection + "and vehicle",
+      selectedVehicleId
+    );
+    const eventSource = new EventSource(
+      "/api/sse?colName=" + collection + "&vehicleId=" + selectedVehicleId
+    );
+
+    eventSource.onopen = () => {
+      console.log("SSE connection opened.");
+      // Save the SSE connection reference in the state
     };
 
-    const listenToSSEUpdates = useCallback(() => {
-        console.log('listenToSSEUpdates func')
-        const eventSource = new EventSource('/api/sse')
-    
-        eventSource.onopen = () => {
-          console.log('SSE connection opened.')
-          // Save the SSE connection reference in the state
-        }
-    
-        eventSource.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          //console.log('Received SSE Update:', data);
-          setVehicleData((prevData) => ({
-            ...prevData,
-            ...data.updateDescription.updatedFields,
-          }));
-        }
-    
-        eventSource.onerror = (event) => {
-          console.error('SSE Error:', event);
-        }
-        setSSEConnection(eventSource);
-    
-        return eventSource;
-      }, []);
-
-    useEffect(() => {
-        fetchInitialData();
-        const eventSource = listenToSSEUpdates();
-
-        return () => {
-            if (eventSource) {
-                eventSource.close();
-                console.log('SSE connection closed.');
-            }
-        }
-    }, [listenToSSEUpdates]);
-
-    useEffect(() => {
-        const handleBeforeUnload = () => {
-          if (sseConnection) {
-            console.info('Closing SSE connection before unloading the page.')
-            sseConnection.close()
-          }
-        }
-    
-        window.addEventListener('beforeunload', handleBeforeUnload)
-    
-        // Clean up the event listener when the component is unmounted
-        return () => {
-          window.removeEventListener('beforeunload', handleBeforeUnload)
-        }
-      }, [sseConnection]);
-
-      const resetBattery = async () => {
-        try {
-            const response = await fetch(`/api/updateVehicleData`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    Battery_Temp: 24,
-                    Battery_Current: 100,
-                    Battery_Status_OK: true,
-                }),
-            });
-            if (response.ok) {
-                console.log('Battery reset successfully');
-            } else {
-                console.error('Failed to reset battery');
-            }
-        } catch (error) {
-            console.error('Error resetting battery:', error);
-        }
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      //console.log('Received SSE Update:', data);
+      setVehicleData((prevData) => ({
+        ...prevData,
+        ...data.updateDescription.updatedFields,
+      }));
     };
+
+    eventSource.onerror = (event) => {
+      console.error("SSE Error:", event);
+    };
+
+    // Close the previous connection if it exists
+    if (sseConnection.current) {
+      sseConnection.current.close();
+      console.log("Previous SSE connection closed.");
+    }
+
+    sseConnection.current = eventSource;
+
+    return eventSource;
+  }, [selectedVehicleId]);
+
+  useEffect(() => {
+    fetchVehicles();
+    const eventSource = listenToSSEUpdates();
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+        console.log("SSE connection closed.");
+      }
+    };
+  }, [listenToSSEUpdates]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (sseConnection.current) {
+        console.info("Closing SSE connection before unloading the page.");
+        sseConnection.current.close();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [sseConnection]);
+
+  const fetchVehicles = async () => {
+    try {
+      const response = await fetch("/api/action/find", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          collection: collection,
+          filter: {}, // No filter to get all vehicles
+          projection: { Vehicle_Name: 1 }, // Only get Vehicle_Name
+        }),
+      });
+      const data = await response.json();
+      setVehicles(data);
+    } catch (error) {
+      console.error("Error fetching vehicles:", error);
+    }
+  };
+
+  const fetchVehicleData = async (vehicleId) => {
+    try {
+      const response = await fetch("/api/action/findOne", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          collection: collection,
+          filter: { _id: vehicleId },
+        }),
+      });
+      const data = await response.json();
+      setVehicleData(data);
+    } catch (error) {
+      console.error("Error fetching vehicle data:", error);
+    }
+  };
+
+  const handleVehicleChange = (event) => {
+    const vehicleId = event;
+    setSelectedVehicleId(vehicleId);
+    fetchVehicleData(vehicleId);
+  };
+
+  const resetBattery = async () => {
+    try {
+      const response = await fetch("/api/action/updateOne", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          collection: collection,
+          filter: { _id: vehicleData._id },
+          update: {
+            $set: {
+              Battery_Temp: 24,
+              Battery_Current: 100,
+              Battery_Status_OK: true,
+            },
+          },
+          upsert: false,
+        }),
+      });
+      if (response.ok) {
+        console.log("Battery reset successfully");
+      } else {
+        console.error("Failed to reset battery");
+      }
+    } catch (error) {
+      console.error("Error resetting battery:", error);
+    }
+  };
 
   return (
     <div className="vehicle-container">
-        <h1>Vehicle: {vehicleData.Vehicle_Name}</h1>
-        <img className="vehicle-image" src="/vehicle/new_car.png" alt="Image of vehicle"/>
-        <p className="voltage">Battery Temperature: {vehicleData.Battery_Temp}</p>
-        <p className="current">Battery Charge: {vehicleData.Battery_Current}</p>
-        <p className="ison">Is on: {vehicleData.LightsOn ? "On" : "Off" }</p>
-        <img className="engine-image" src={vehicleData.LightsOn ? "/vehicle/engine_on.gif" : "/vehicle/engine_off.png"} alt="Engine Image" />
-        <p className="vin">{vehicleData._id}</p>
-        <div className="alert-section">
-            <img className="alert-image" src={vehicleData.Battery_Status_OK ? "/vehicle/alert_icon_gray.png" : "/vehicle/alert_icon_red.png"} alt="Alert Icon" />
+      <Select
+        placeholder="Select a vehicle"
+        onChange={handleVehicleChange}
+        value={selectedVehicleId || ""}
+        aria-label="Vehicle Select"
+      >
+        {vehicles.map((vehicle) => (
+          <Option key={vehicle._id} value={vehicle._id}>
+            {vehicle.Vehicle_Name}
+          </Option>
+        ))}
+      </Select>
+      {vehicleData && (
+        <>
+          <h1>Vehicle: {vehicleData.Vehicle_Name}</h1>
+          <Image
+            className="vehicle-image"
+            src="/vehicle/new_car.png"
+            alt="Image of vehicle"
+            height={50}
+            width={200}
+          />
+          <p className="voltage">
+            Battery Temperature: {vehicleData.Battery_Temp}
+          </p>
+          <p className="current">
+            Battery Charge: {vehicleData.Battery_Current}
+          </p>
+          <p className="ison">Is on: {vehicleData.LightsOn ? "On" : "Off"}</p>
+          <Image
+            className="engine-image"
+            src={
+              vehicleData.LightsOn
+                ? "/vehicle/engine_on.gif"
+                : "/vehicle/engine_off.png"
+            }
+            alt="Engine Image"
+            height={40}
+            width={40}
+          />
+          <p className="vin">{vehicleData._id}</p>
+          <div className="alert-section">
+            <Image
+              className="alert-image"
+              src={
+                vehicleData.Battery_Status_OK
+                  ? "/vehicle/alert_icon_gray.png"
+                  : "/vehicle/alert_icon_red.png"
+              }
+              alt="Alert Icon"
+              height={20}
+              width={20}
+            />
             <h3 className="alert-tooltip"></h3>
-        </div>
-        <div>{JSON.stringify(vehicleData)}</div>
-        <Button onClick={resetBattery}>Reset Battery</Button>
+          </div>
+          <div>{JSON.stringify(vehicleData)}</div>
+          <Button onClick={resetBattery}>Reset Battery</Button>
+        </>
+      )}
     </div>
   );
 };
