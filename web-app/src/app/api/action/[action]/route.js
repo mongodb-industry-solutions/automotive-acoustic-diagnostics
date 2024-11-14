@@ -57,6 +57,9 @@ export async function POST(req, { params }) {
           upsert: upsert || false,
         });
         break;
+      case "deleteMany":
+        result = await col.deleteMany(filter);
+        break;
       default:
         return NextResponse.json(
           { message: "Invalid action" },

@@ -17,13 +17,14 @@ load_dotenv()
 app = FastAPI()
 
 connection_string = os.getenv('MONGODB_URI')
+database_name = os.getenv('DATABASE_NAME')
 
 # Initialize the AudioTagging model
 model = AudioTagging(checkpoint_path=None, device='cuda')
 
 # Deine MongoDB client
 client = MongoClient(connection_string, tlsCAFile=certifi.where())
-db = client['acoustic_diagnostics']
+db = client[database_name]
 mongodb_sounds_collection = db['sounds']
 mongodb_results_collection = db['results']
 
@@ -112,6 +113,22 @@ def knnbeta_search(embedding, mongodb_sounds_collection):
 
     return results
 
+def compute_weighted_average(json_results):
+    audio_scores = {}
+    
+    for result in json_results:
+        audio = result['audio']
+        score = result['score']
+        
+        if audio in audio_scores:
+            audio_scores[audio].append(score)
+        else:
+            audio_scores[audio] = [score]
+    
+    most_likely_audio = max(audio_scores, key=lambda audio: sum(audio_scores[audio]) / len(audio_scores[audio]))
+    
+    return most_likely_audio
+
 
 # CORS Middleware configuration
 app.add_middleware(
@@ -162,7 +179,10 @@ async def diagnose(file: UploadFile = File(...)):
     results = knnbeta_search(emb, mongodb_sounds_collection)
     json_results = list(results)
     insert_mongo_results(json_results,mongodb_results_collection)
+
+    most_likely_audio = compute_weighted_average(json_results)
+    print(most_likely_audio)
     
-    return {"success": True}
+    return {"success": True, "most_likely_audio": most_likely_audio}
 
 # To run the FastAPI server, use the command: uvicorn main:app --reload

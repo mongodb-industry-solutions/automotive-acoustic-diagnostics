@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { startRecording, stopRecording } from "@/lib/audio";
-import { useToast } from "@leafygreen-ui/toast";
 import Button from "@leafygreen-ui/button";
 import Image from "next/image";
 import styles from "./sampleAnalyzer.module.css";
@@ -16,7 +15,6 @@ const SampleAnalyzer = ({
   const [messages, setMessages] = useState([]);
   const [currentGif, setCurrentGif] = useState(defaultGif);
   const previousAudioRef = useRef("");
-  const { pushToast } = useToast();
 
   useEffect(() => {
     /*socket.on('message', (message) => {
@@ -57,10 +55,6 @@ const SampleAnalyzer = ({
       await startRecording(selectedDeviceId, null, setRecording, 100);
     } catch (error) {
       console.error("Error starting diagnostics:", error);
-      pushToast({
-        title: "Failed to start diagnostics. Please, try again.",
-        variant: "warning",
-      });
     }
   };
 

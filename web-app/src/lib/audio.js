@@ -16,13 +16,12 @@ export const startRecording = (
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { deviceId: selectedDeviceId },
       });
-      const env = process.env.NEXT_PUBLIC_ENV;
       let samplesSent = 0;
       stopRecorder = false;
 
       setRecording(true);
       while (samplesSent < numSamples && !stopRecorder) {
-        await recordSample(stream, audioName, env);
+        await recordSample(stream, audioName);
         samplesSent++;
       }
 
@@ -35,7 +34,7 @@ export const startRecording = (
   });
 };
 
-const recordSample = (stream, audioName, env) => {
+const recordSample = (stream, audioName) => {
   return new Promise(async (resolve, reject) => {
     const recorder = new MediaRecorder(stream);
     const timeslice = 1000; //Recording time per sample in ms
@@ -48,7 +47,7 @@ const recordSample = (stream, audioName, env) => {
     recorder.onstop = async () => {
       const completeBlob = new Blob(chunks, { type: "audio/webm" });
       try {
-        await sendAudioToBackend(completeBlob, audioName, env);
+        await sendAudioToBackend(completeBlob, audioName);
         resolve(); // Resolve the promise when sample is sent
       } catch (error) {
         console.error(error);
@@ -65,13 +64,16 @@ const recordSample = (stream, audioName, env) => {
   });
 };
 
-const sendAudioToBackend = async (audioBlob, audioName, env) => {
+const sendAudioToBackend = async (audioBlob, audioName) => {
   const formData = new FormData();
   formData.append("file", audioBlob, "recording.webm");
 
-  let url = "http://localhost:8000/embed-audio";
-  if (audioName !== null) {
-    url += `?audio_name=${audioName}`;
+  let url = process.env.NEXT_PUBLIC_DIAGNOSTICS_API_URL;
+
+  if (audioName == null) {
+    url += `/diagnose`;
+  } else {
+    url += `/train?audio_name=${audioName}`;
   }
 
   try {
@@ -80,7 +82,10 @@ const sendAudioToBackend = async (audioBlob, audioName, env) => {
       body: formData,
     });
 
-    if (!response.ok) {
+    const data = await response.json();
+    if (response.ok && data.success) {
+      console.log("Most likely audio: ", data.most_likely_audio);
+    } else {
       throw new Error(
         "Failed to get response from API: " + response.statusText
       );
@@ -107,15 +112,22 @@ export const stopRecording = () => {
 
 export const deletePreviousSamples = async (audioName) => {
   try {
-    const response = await fetch(
-      `/api/deletePreviousSamples?audioName=${audioName}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const response = await fetch("/api/action/deleteMany", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        collection: "sounds",
+        filter: { audio: audioName },
+      }),
+    });
     if (!response.ok) {
       throw new Error("Failed to delete previous samples");
     }
+    const result = await response.json();
+    return result;
   } catch (error) {
     throw new Error(`Error deleting previous samples: ${error.message}`);
   }
