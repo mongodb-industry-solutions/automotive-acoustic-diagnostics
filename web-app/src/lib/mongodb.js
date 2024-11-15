@@ -35,7 +35,7 @@ async function getChangeStream(filter, key) {
     const changeStream = db.watch(pipeline);
 
     changeStream.on("change", (change) => {
-      console.log("Change: ", change);
+      //console.log("Change: ", change);
     });
 
     changeStream.on("error", (error) => {
