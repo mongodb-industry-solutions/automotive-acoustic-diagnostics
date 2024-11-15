@@ -18,18 +18,18 @@ In a very high level, this demo is composed of 3 main components:
 
 Now let's get into details to explain all the parts the demo has, how they are connected and how to replicate it.
 
-![image](media/high-level-arch.png)
+![image](media/images/high-level-arch.png)
 
 ## Hardware
 
 To replicate the real use case of a machine, we are using the 4-cylinder Engine replica Teching DM13. We decided to use this specific hardware because it's all made of metal, which makes it more sturdy for traveling and testing, and also because it was the right combination of cost, size and functionality between all the hardware we evaluated. But in reality this demo can be run with any piece of hardware (even a real machine!) that can run and make some noise.
-![image](media/teching-dm13.png)
+![image](media/images/teching-dm13.png)
 
 The product requires the user to assemble the parts, and the parts move thanks to an electric motor connected to a set cog wheels, and chains that make its parts move. The electric motor is powered by a 500mAh Lithium Battery that can be charged.
 
 This is an standalone product, that has a ON/OFF manual switch to power it. In order for us to be able to control the engine through MongoDB Atlas, we had to intervene.
 
-<img src="media/on-off-switch.png" width="200"/>
+<img src="media/images/on-off-switch.png" width="200"/>
 
 That meant to connect the ON/OFF manual switch to a Relay (which is simply an electronically operated switch), so we don't have to turn the switch to our hands. Then, we connected the Relay to a Raspberry Pi 5 which will be the bridge to host the software that communicates with the Cloud.
 
@@ -57,20 +57,20 @@ Additionally, there are a few extra items we got:
 
 For this demo we used the 5V relay KF-301:
 
-<img src="media/relay.png" width="200"/>
+<img src="media/images/relay.png" width="200"/>
 
 ### Hardware Connections
 
 This is how we electrically connected the Raspberry Pi (left of the image) to the Relay, and the Relay to the ON/OFF switch sockets of the engine (right of the image)
-![image](media/RPi-Rele-Engine-schema.png)
+![image](media/images/RPi-Rele-Engine-schema.png)
 
 ##### Traffic Ligth Sensor Cable Schematic
 
-![image](media/traffic-light-sensor-setup.png)
+![image](media/images/traffic-light-sensor-setup.png)
 
 ##### Proximity Sensor Cable Schematic
 
-![image](media/Infrared-proximity-sensor-setup.png)
+![image](media/images/Infrared-proximity-sensor-setup.png)
 
 > [!TIP]
 > The python scripts used on this demo refer directly to specific pins, so make sure you either follow the above schematic exactly, or you edit the scripts on `engine_controler/` so the program uses the necessary pins of the Raspberry Pi.
