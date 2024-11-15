@@ -11,6 +11,7 @@ import os
 import certifi
 from dotenv import load_dotenv
 from datetime import datetime
+from bson.objectid import ObjectId
 
 load_dotenv()
 
@@ -27,6 +28,7 @@ client = MongoClient(connection_string, tlsCAFile=certifi.where())
 db = client[database_name]
 mongodb_sounds_collection = db['sounds']
 mongodb_results_collection = db['results']
+mongodb_vehicle_data_collection = db['vehicle_data']
 
 # Function to normalize a vector
 def normalize(v):
@@ -60,9 +62,9 @@ def get_embedding(audio_file):
 
     return normalized_v
 
-def insert_mongo_sounds(audio_name,embedding,audio_file,image, mongodb_sounds_collection):
+def insert_mongo_sounds(audio_name,embedding):
     # Create the results document
-    entry = {"audio":audio_name,"emb":embedding,"audio_file":audio_file,"image":image}
+    entry = {"audio":audio_name,"emb":embedding}
 
     try:
         # Insert the document into the MongoDB collection
@@ -72,17 +74,21 @@ def insert_mongo_sounds(audio_name,embedding,audio_file,image, mongodb_sounds_co
         return False
     return True
 
-def insert_mongo_results(results, mongodb_results_collection):
+def insert_mongo_results(results, status, _id):
     # Create the results document
-    entry = {"sensor":"Ralph's laptop","data_time":datetime.now(),"results":results}
+    entry = {"sensor":"Microphone 1","data_time":datetime.now(),"results":results}
     try:
+        # Insert results
         mongodb_results_collection.insert_one(entry)
+
+        # Update engine status
+        mongodb_vehicle_data_collection.update_one({"_id": ObjectId(_id)}, {"$set": {"Engine_Status":status}})
     except Exception as e:
         print(f"Error inserting document: {e}")
         return False
     return True
 
-def knnbeta_search(embedding, mongodb_sounds_collection):
+def knnbeta_search(embedding):
     # Create the query vector
     query_vector = embedding.tolist()
 
@@ -113,7 +119,7 @@ def knnbeta_search(embedding, mongodb_sounds_collection):
 
     return results
 
-def compute_weighted_average(json_results):
+def weighted_average(json_results):
     audio_scores = {}
     
     for result in json_results:
@@ -125,9 +131,9 @@ def compute_weighted_average(json_results):
         else:
             audio_scores[audio] = [score]
     
-    most_likely_audio = max(audio_scores, key=lambda audio: sum(audio_scores[audio]) / len(audio_scores[audio]))
+    status_pred = max(audio_scores, key=lambda audio: sum(audio_scores[audio]) / len(audio_scores[audio]))
     
-    return most_likely_audio
+    return status_pred
 
 
 # CORS Middleware configuration
@@ -139,23 +145,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/embed-audio")
-async def embed_audio(file: UploadFile = File(...), audio_name: str = None):
-    if file.content_type != "audio/webm":
-        return JSONResponse(status_code=400, content={"message": "Invalid file type. Please upload a WebM file."})
-
-    audio_file = await file.read()
-    emb = get_embedding(audio_file)
-
-    if audio_name is None:
-        results = knnbeta_search(emb, mongodb_sounds_collection)
-        json_results = list(results)
-        insert_mongo_results(json_results,mongodb_results_collection)
-    else: 
-        insert_mongo_sounds(audio_name, emb.tolist(),"0","",mongodb_sounds_collection)
-    
-    return {"success": True}
-
 @app.post("/train")
 async def train(file: UploadFile = File(...), audio_name: str = None):
     if file.content_type != "audio/webm":
@@ -164,25 +153,25 @@ async def train(file: UploadFile = File(...), audio_name: str = None):
     audio_file = await file.read()
     emb = get_embedding(audio_file)
 
-    insert_mongo_sounds(audio_name, emb.tolist(),"0","",mongodb_sounds_collection)
+    insert_mongo_sounds(audio_name, emb.tolist())
     
     return {"success": True}
 
 @app.post("/diagnose")
-async def diagnose(file: UploadFile = File(...)):
+async def diagnose(file: UploadFile = File(...), _id: str = None):
     if file.content_type != "audio/webm":
         return JSONResponse(status_code=400, content={"message": "Invalid file type. Please upload a WebM file."})
 
     audio_file = await file.read()
     emb = get_embedding(audio_file)
     
-    results = knnbeta_search(emb, mongodb_sounds_collection)
+    results = knnbeta_search(emb)
     json_results = list(results)
-    insert_mongo_results(json_results,mongodb_results_collection)
+    status_pred = weighted_average(json_results)
+    print(_id)
 
-    most_likely_audio = compute_weighted_average(json_results)
-    print(most_likely_audio)
+    insert_mongo_results(json_results, status_pred, _id)
     
-    return {"success": True, "most_likely_audio": most_likely_audio}
+    return {"success": True, "engine_status": status_pred}
 
 # To run the FastAPI server, use the command: uvicorn main:app --reload
