@@ -30,7 +30,9 @@ const SampleRecorder = ({
         selectedDeviceId,
         audioName,
         setRecording,
-        parseInt(numSamples)
+        parseInt(numSamples),
+        null,
+        null
       );
       setCurrentIndex((prevIndex) => prevIndex + 1);
     } catch (error) {
@@ -40,6 +42,15 @@ const SampleRecorder = ({
 
   const skipTraining = () => {
     setCurrentIndex(dictionary.length);
+  };
+
+  const handlePrevious = () => {
+    setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  };
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      Math.min(prevIndex + 1, dictionary.length - 1)
+    );
   };
 
   return (
@@ -81,6 +92,20 @@ const SampleRecorder = ({
           className={styles.skipBtn}
         >
           Skip Training
+        </Button>
+        <Button
+          disabled={currentIndex === 0}
+          onClick={handlePrevious}
+          variant="default"
+        >
+          Previous
+        </Button>
+        <Button
+          disabled={currentIndex === dictionary.length - 1}
+          onClick={handleNext}
+          variant="default"
+        >
+          Next
         </Button>
         {/*audioBlob && <audio controls src={URL.createObjectURL(audioBlob)} />*/}
       </div>

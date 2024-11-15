@@ -9,50 +9,22 @@ const SampleAnalyzer = ({
   selectedDeviceId,
   recording,
   setRecording,
+  vehicleId,
 }) => {
-  const defaultGif = "/sample.gif";
-
-  const [messages, setMessages] = useState([]);
-  const [currentGif, setCurrentGif] = useState(defaultGif);
   const previousAudioRef = useRef("");
-
-  useEffect(() => {
-    /*socket.on('message', (message) => {
-            const currentAudio = message.audio;
-            console.log(`Current audio: ${message.audio}`);
-            console.log(`Previous audio: ${previousAudioRef.current}`)
-            if (currentAudio !== previousAudioRef.current) {
-                const date = new Date();
-                const hours = ('0' + date.getHours()).slice(-2);
-                const minutes = ('0' + date.getMinutes()).slice(-2);
-                const seconds = ('0' + date.getSeconds()).slice(-2);
-                const timestamp = `${hours}:${minutes}:${seconds}`;
-
-                setMessages(prevMessages => [
-                    { timestamp, audio: currentAudio },
-                    ...prevMessages
-                ]);
-                previousAudioRef.current = currentAudio;
-
-                const matchingAudio = dictionary.find(item => item.audio === currentAudio);
-                if (matchingAudio && matchingAudio.image) {
-                    setCurrentGif(matchingAudio.image);
-                } else {
-                    setCurrentGif(defaultGif);
-                }
-            }
-        });
-
-        return () => {
-            socket.off('message');
-        };*/
-  }, []);
+  const [engineStatus, setEngineStatus] = useState("");
 
   const handleStartDiagnostics = async () => {
     previousAudioRef.current = "";
-    setMessages([]);
     try {
-      await startRecording(selectedDeviceId, null, setRecording, 100);
+      await startRecording(
+        selectedDeviceId,
+        null,
+        setRecording,
+        100,
+        vehicleId,
+        setEngineStatus
+      );
     } catch (error) {
       console.error("Error starting diagnostics:", error);
     }
@@ -60,7 +32,6 @@ const SampleAnalyzer = ({
 
   const handleStopDiagnostics = () => {
     stopRecording();
-    setCurrentGif(defaultGif);
   };
 
   return (
@@ -83,23 +54,7 @@ const SampleAnalyzer = ({
           Stop Diagnostics
         </Button>
       </div>
-      <Image
-        id={styles.funnyGIF}
-        src={currentGif}
-        height={500}
-        width={500}
-        alt="GIF"
-      />
-      <div id="log-list">
-        <h2 className={styles.log}>Log</h2>
-        <ul className={styles.messages}>
-          {messages.map((msg, index) => (
-            <li key={index}>
-              {msg.timestamp} - {msg.audio}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <div>{engineStatus}</div>
     </>
   );
 };

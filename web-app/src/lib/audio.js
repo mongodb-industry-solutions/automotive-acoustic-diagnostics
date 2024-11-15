@@ -4,7 +4,9 @@ export const startRecording = (
   selectedDeviceId,
   audioName,
   setRecording,
-  numSamples
+  numSamples,
+  _id,
+  setEngineStatus
 ) => {
   return new Promise(async (resolve, reject) => {
     if (!selectedDeviceId) {
@@ -18,10 +20,12 @@ export const startRecording = (
       });
       let samplesSent = 0;
       stopRecorder = false;
+      let status = null;
 
       setRecording(true);
       while (samplesSent < numSamples && !stopRecorder) {
-        await recordSample(stream, audioName);
+        status = await recordSample(stream, audioName, _id);
+        if (status) setEngineStatus(status);
         samplesSent++;
       }
 
@@ -34,7 +38,7 @@ export const startRecording = (
   });
 };
 
-const recordSample = (stream, audioName) => {
+const recordSample = (stream, audioName, _id) => {
   return new Promise(async (resolve, reject) => {
     const recorder = new MediaRecorder(stream);
     const timeslice = 1000; //Recording time per sample in ms
@@ -47,8 +51,8 @@ const recordSample = (stream, audioName) => {
     recorder.onstop = async () => {
       const completeBlob = new Blob(chunks, { type: "audio/webm" });
       try {
-        await sendAudioToBackend(completeBlob, audioName);
-        resolve(); // Resolve the promise when sample is sent
+        const status = await sendAudioToBackend(completeBlob, audioName, _id);
+        resolve(status); // Resolve the promise when sample is sent
       } catch (error) {
         console.error(error);
         reject(error);
@@ -64,14 +68,14 @@ const recordSample = (stream, audioName) => {
   });
 };
 
-const sendAudioToBackend = async (audioBlob, audioName) => {
+const sendAudioToBackend = async (audioBlob, audioName, _id) => {
   const formData = new FormData();
   formData.append("file", audioBlob, "recording.webm");
 
   let url = process.env.NEXT_PUBLIC_DIAGNOSTICS_API_URL;
 
   if (audioName == null) {
-    url += `/diagnose`;
+    url += `/diagnose?_id=${_id}`;
   } else {
     url += `/train?audio_name=${audioName}`;
   }
@@ -84,7 +88,7 @@ const sendAudioToBackend = async (audioBlob, audioName) => {
 
     const data = await response.json();
     if (response.ok && data.success) {
-      console.log("Most likely audio: ", data.most_likely_audio);
+      return data.engine_status;
     } else {
       throw new Error(
         "Failed to get response from API: " + response.statusText

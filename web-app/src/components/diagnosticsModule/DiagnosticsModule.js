@@ -14,6 +14,8 @@ const DiagnosticsModule = ({}) => {
   const [recording, setRecording] = useState(false);
   const [dictionary, setDictionary] = useState([]);
 
+  const vehicleId = "658876fde27a68ff985cdb4d";
+
   useEffect(() => {
     fetchDictionary();
   }, []);
@@ -58,7 +60,7 @@ const DiagnosticsModule = ({}) => {
           Reset
         </Button>
 
-        {!dictionary || currentIndex < dictionary.length ? (
+        {dictionary.length == 0 || currentIndex < dictionary.length ? (
           <SampleRecorder
             dictionary={dictionary}
             selectedDeviceId={selectedDeviceId}
@@ -73,6 +75,7 @@ const DiagnosticsModule = ({}) => {
             selectedDeviceId={selectedDeviceId}
             recording={recording}
             setRecording={setRecording}
+            vehicleId={vehicleId}
           />
         )}
 
