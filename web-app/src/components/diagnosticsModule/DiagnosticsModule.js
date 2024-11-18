@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import AudioDevicePicker from "@/components/audioDevicePicker/AudioDevicePicker";
 import SampleRecorder from "@/components/sampleRecorder/SampleRecorder";
 import SampleAnalyzer from "@/components/sampleAnalyzer/SampleAnalyzer";
+import SampleSimulator from "@/components/sampleSimulator/SampleSimulator";
 import Button from "@leafygreen-ui/button";
 import Stepper, { Step } from "@leafygreen-ui/stepper";
 import styles from "./diagnosticsModule.module.css";
@@ -13,6 +14,7 @@ const DiagnosticsModule = ({}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recording, setRecording] = useState(false);
   const [dictionary, setDictionary] = useState([]);
+  const [mode, setMode] = useState("live");
 
   const vehicleId = "658876fde27a68ff985cdb4d";
 
@@ -46,48 +48,69 @@ const DiagnosticsModule = ({}) => {
   return (
     <>
       <div className={styles.page}>
-        <AudioDevicePicker
-          deviceId={selectedDeviceId}
-          setDeviceId={setSelectedDeviceId}
-          recording={recording}
-        />
+        <div className={styles.buttonContainer}>
+          <Button
+            className={styles.modeBtn}
+            onClick={() => setMode("live")}
+            disabled={mode === "live"}
+          >
+            Live
+          </Button>
+          <Button
+            className={styles.modeBtn}
+            onClick={() => setMode("simulation")}
+            disabled={mode === "simulation"}
+          >
+            Simulation
+          </Button>
+        </div>
+        {mode === "live" ? (
+          <div>
+            <AudioDevicePicker
+              deviceId={selectedDeviceId}
+              setDeviceId={setSelectedDeviceId}
+              recording={recording}
+            />
 
-        <Button
-          className={styles.resetBtn}
-          disabled={recording}
-          onClick={resetTraining}
-        >
-          Reset
-        </Button>
+            <Button
+              className={styles.resetBtn}
+              disabled={recording}
+              onClick={resetTraining}
+            >
+              Reset
+            </Button>
+            {dictionary.length == 0 || currentIndex < dictionary.length ? (
+              <SampleRecorder
+                dictionary={dictionary}
+                selectedDeviceId={selectedDeviceId}
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+                recording={recording}
+                setRecording={setRecording}
+              />
+            ) : (
+              <SampleAnalyzer
+                dictionary={dictionary}
+                selectedDeviceId={selectedDeviceId}
+                recording={recording}
+                setRecording={setRecording}
+                vehicleId={vehicleId}
+              />
+            )}
 
-        {dictionary.length == 0 || currentIndex < dictionary.length ? (
-          <SampleRecorder
-            dictionary={dictionary}
-            selectedDeviceId={selectedDeviceId}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            recording={recording}
-            setRecording={setRecording}
-          />
+            <Stepper
+              currentStep={currentIndex}
+              className={styles.stepper}
+              maxDisplayedSteps={5}
+            >
+              {dictionary.map((item, index) => (
+                <Step key={index}>{item.audio}</Step>
+              ))}
+            </Stepper>
+          </div>
         ) : (
-          <SampleAnalyzer
-            dictionary={dictionary}
-            selectedDeviceId={selectedDeviceId}
-            recording={recording}
-            setRecording={setRecording}
-            vehicleId={vehicleId}
-          />
+          <SampleSimulator dictionary={dictionary} vehicleId={vehicleId} />
         )}
-
-        <Stepper
-          currentStep={currentIndex}
-          className={styles.stepper}
-          maxDisplayedSteps={5}
-        >
-          {dictionary.map((item, index) => (
-            <Step key={index}>{item.audio}</Step>
-          ))}
-        </Stepper>
       </div>
     </>
   );

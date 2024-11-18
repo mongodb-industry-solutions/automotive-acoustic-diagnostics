@@ -12,6 +12,7 @@ import certifi
 from dotenv import load_dotenv
 from datetime import datetime
 from bson.objectid import ObjectId
+import json
 
 load_dotenv()
 
@@ -168,7 +169,30 @@ async def diagnose(file: UploadFile = File(...), _id: str = None):
     results = knnbeta_search(emb)
     json_results = list(results)
     status_pred = weighted_average(json_results)
-    print(_id)
+
+    insert_mongo_results(json_results, status_pred, _id)
+    
+    return {"success": True, "engine_status": status_pred}
+
+@app.get("/simulate")
+async def simulate(_id: str = None, audio_name: str = None):
+    if not audio_name:
+        return JSONResponse(status_code=400, content={"message": "audio_name is required."})
+    
+    file_name = audio_name.lower().replace(" ", "_")
+    file_path = f"data/{file_name}.json"
+    
+    if not os.path.exists(file_path):
+        return JSONResponse(status_code=404, content={"message": f"File {file_name}.json not found."})
+    
+    try:
+        with open(file_path, 'r') as file:
+            file_content = json.load(file)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"message": f"Error reading file: {e}"})
+    
+    json_results = file_content
+    status_pred = audio_name
 
     insert_mongo_results(json_results, status_pred, _id)
     
