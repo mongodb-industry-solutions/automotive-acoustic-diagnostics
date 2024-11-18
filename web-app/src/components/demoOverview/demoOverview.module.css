@@ -28,8 +28,8 @@
 }
 
 .architectureImage {
-  width: 60%;
-  height: 100%;
+  width: 600px;
+  height: auto;
 }
 
 .card {

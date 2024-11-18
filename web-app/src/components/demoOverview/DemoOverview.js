@@ -17,8 +17,8 @@ const OverviewComp = () => {
         src="/demooverview.png"
         className={styles.architectureImage}
         alt="Flow"
-        height={200}
-        width={200}
+        height={500}
+        width={500}
       ></Image>
 
       <H3 className={styles.compTitle}>Check out our related resources!</H3>
