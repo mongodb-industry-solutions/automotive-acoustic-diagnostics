@@ -3,6 +3,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px; /* Adjust the gap between the expandable cards as needed */
+margin-top: 20px;
+margin-bottom: 20px;
 }
 
 .modulesContainer {

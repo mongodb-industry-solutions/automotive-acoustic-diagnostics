@@ -148,7 +148,7 @@ const SampleSimulator = ({ dictionary, vehicleId }) => {
   return (
     <>
       <h1 className={styles.title2}>Simulator</h1>
-      <div>
+      <div className={styles.actionBtns}>
         <Button
           disabled={isRunning}
           onClick={handleStartSimulation}

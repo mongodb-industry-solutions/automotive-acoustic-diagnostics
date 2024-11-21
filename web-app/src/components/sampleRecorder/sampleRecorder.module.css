@@ -10,6 +10,6 @@
   margin-bottom: 50px;
 }
 
-.skipBtn {
+.skipBtn, .nextBtn, .prevBtn {
   margin-left: 20px;
 }

@@ -9,7 +9,10 @@ import AnalyticsModule from "@/components/analyticsModule/AnalyticsModule";
 export default function DigitalTwin() {
   return (
     <div className={styles.page}>
-      <ExpandableCard>
+      <ExpandableCard
+        title="Vehicle Information"
+        description="General information about the vehicle and real-time audio diagnostics."
+      >
         <div className={styles.modulesContainer}>
           <div className={styles.module}>
             <VehicleModule />
@@ -19,7 +22,10 @@ export default function DigitalTwin() {
           </div>
         </div>
       </ExpandableCard>
-      <ExpandableCard>
+      <ExpandableCard
+       title="Analytics"
+       description="Vehicle status analytics and AI generated reports."
+       >
         <AnalyticsModule />
       </ExpandableCard>
     </div>
