@@ -97,6 +97,7 @@ const SampleRecorder = ({
           disabled={currentIndex === 0}
           onClick={handlePrevious}
           variant="default"
+          className={styles.prevBtn}
         >
           Previous
         </Button>
@@ -104,6 +105,7 @@ const SampleRecorder = ({
           disabled={currentIndex === dictionary.length - 1}
           onClick={handleNext}
           variant="default"
+          className={styles.nextBtn}
         >
           Next
         </Button>

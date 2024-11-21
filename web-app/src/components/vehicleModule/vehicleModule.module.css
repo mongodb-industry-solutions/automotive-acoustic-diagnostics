@@ -1,0 +1,12 @@
+.resetBtn{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.alertSection{
+    display: flex;
+}
+
+.alertImg{
+    padding: 10px 5px;
+}

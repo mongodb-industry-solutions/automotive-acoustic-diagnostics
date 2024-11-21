@@ -25,11 +25,11 @@ const VehicleModule = () => {
     );
     const eventSource = new EventSource(
       "/api/sse?sessionId=" +
-        sessionId +
-        "colName=" +
-        collection +
-        "&_id=" +
-        selectedVehicleId
+      sessionId +
+      "colName=" +
+      collection +
+      "&_id=" +
+      selectedVehicleId
     );
 
     eventSource.onopen = () => {
@@ -185,16 +185,16 @@ const VehicleModule = () => {
             className="vehicle-image"
             src="/vehicle/new_car.png"
             alt="Image of vehicle"
-            height={50}
+            height={90}
             width={200}
           />
           <p className="voltage">
-            Battery Temperature: {vehicleData.Battery_Temp}
+            Battery Temperature: {vehicleData.Battery_Temp} °C
           </p>
           <p className="current">
             Battery Charge: {vehicleData.Battery_Current}
           </p>
-          <p className="ison">Is on: {vehicleData.LightsOn ? "On" : "Off"}</p>
+          <p className="ison">Engine Status: {vehicleData.LightsOn ? "On" : "Off"}</p>
           <Image
             className="engine-image"
             src={
@@ -204,12 +204,13 @@ const VehicleModule = () => {
             }
             alt="Engine Image"
             height={40}
-            width={40}
+            width={50}
           />
-          <p className="vin">{vehicleData._id}</p>
-          <div className="alert-section">
+          <p className="vin">Vehicle ID: {vehicleData._id}</p>
+          <div className={styles.alertSection}>
+            <p>Active Alerts:</p>
             <Image
-              className="alert-image"
+              className={styles.alertImg}
               src={
                 vehicleData.Battery_Status_OK
                   ? "/vehicle/alert_icon_gray.png"
@@ -219,10 +220,18 @@ const VehicleModule = () => {
               height={20}
               width={20}
             />
+
+            <p>
+              {
+                vehicleData.Battery_Status_OK
+                  ? "None"
+                  : "Battery Issue"
+              }
+            </p>
             <h3 className="alert-tooltip"></h3>
           </div>
           <div>{JSON.stringify(vehicleData)}</div>
-          <Button onClick={resetBattery}>Reset Battery</Button>
+          <Button className={styles.resetBtn} onClick={resetBattery}>Reset Battery</Button>
         </>
       )}
     </div>
