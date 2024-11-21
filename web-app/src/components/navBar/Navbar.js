@@ -15,9 +15,7 @@ const Navbar = () => {
 
       <div className={styles.links}>
         <Link href="/">Demo Overview</Link>
-        <Link href="/digital-twin">Digital Twin</Link>
         <Link href="/acoustic-diagnostics">Acoustic Diagnostics</Link>
-        <Link href="/analytics">Analytics Dashboard</Link>
       </div>
 
       <UserProfile></UserProfile>

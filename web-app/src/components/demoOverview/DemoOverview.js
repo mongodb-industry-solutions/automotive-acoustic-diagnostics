@@ -10,7 +10,7 @@ const OverviewComp = () => {
   return (
     <div className={styles.body}>
       <H1 className={styles.pageTitle}>
-        Welcome to the Automotive Acoustic Diagnostics Demo!
+        Welcome to the automotive acoustic diagnostics demo!
       </H1>
 
       <Image
@@ -27,7 +27,7 @@ const OverviewComp = () => {
         <Card className={styles.card}>
           <a
             className={styles.title}
-            href="https://www.mongodb.com/resources/solutions/use-cases/generative-ai-predictive-maintenance-applications"
+            href="https://www.mongodb.com/solutions/solutions-library"
           >
             <Image
               src="/logos/read.png"
@@ -36,12 +36,12 @@ const OverviewComp = () => {
               height={20}
               width={20}
             ></Image>
-            <H3 className={styles.title}>White Paper</H3>
+            <H3 className={styles.title}>Solutions Library</H3>
           </a>
           <Description className={styles.description}>
             {" "}
-            Learn more about using generative AI to achieve maintenance
-            excellence.
+            (Coming soon!) Learn more about using vector search and generative
+            AI for root-cause diagnostics
           </Description>
 
           <Link
@@ -50,19 +50,19 @@ const OverviewComp = () => {
             rel="noopener noreferrer"
             className={styles.button}
           >
-            Read the paper
+            Read the article
           </Link>
         </Card>
 
         <Card className={styles.card}>
           <a
             className={styles.title}
-            href="https://github.com/mongodb-industry-solutions/Predictive-Maintenance-Hosted"
+            href="https://github.com/mongodb-industry-solutions/automotive-acoustic-diagnostics"
           >
             <Image
               src="/logos/github.png"
               className={styles.image}
-              alt="Insurance"
+              alt="GitHub Logo"
               height={20}
               width={20}
             ></Image>
@@ -79,19 +79,19 @@ const OverviewComp = () => {
             rel="noopener noreferrer"
             className={styles.button}
           >
-            Try the Demo
+            Try the demo
           </Link>
         </Card>
 
         <Card className={styles.card}>
           <a
             className={styles.title}
-            href="https://www.youtube.com/watch?v=YwTWpUl3QS8"
+            href="https://www.youtube.com/watch?v=oFCJmhEl2Pg&list=PL4RCxklHWZ9tqWItuaEaeIYWsAyWpVQ1H"
           >
             <Image
               src="/logos/youtube.png"
               className={styles.image}
-              alt="Insurance"
+              alt="Youtube Logo"
               height={20}
               width={20}
             ></Image>
@@ -99,9 +99,9 @@ const OverviewComp = () => {
           </a>
           <Description className={styles.description}>
             {" "}
-            Explore how MongoDB can be leveraged to create a comprehensive
-            predictive maintenance strategy for the manufacturing and automotive
-            industries.
+            Explore how MongoDB and Atlas Vector Search can be leveraged to
+            create a comprehensive root-cause diagnostics strategy for the
+            manufacturing and automotive industries.
           </Description>
           <Link
             href="https://www.youtube.com/watch?v=YwTWpUl3QS8"
@@ -109,7 +109,7 @@ const OverviewComp = () => {
             rel="noopener noreferrer"
             className={styles.button}
           >
-            Watch the Video
+            Watch the video
           </Link>
         </Card>
       </div>
