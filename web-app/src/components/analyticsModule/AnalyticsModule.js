@@ -6,10 +6,14 @@ import GenAIReports from "@/components/genAIReports/GenAIReports";
 
 const AnalyticsModule = ({}) => {
   return (
-    <>
-      <AnalyticsDashboard />
-      <GenAIReports />
-    </>
+    <div className={styles.analyticsContainer}>
+      <div className={styles.analyticsDashboard}>
+        <AnalyticsDashboard />
+      </div>
+      <div className={styles.genAIReports}>
+        <GenAIReports />
+      </div>
+    </div>
   );
 };
 

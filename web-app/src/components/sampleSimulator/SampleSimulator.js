@@ -33,7 +33,10 @@ const SampleSimulator = ({ dictionary, vehicleId }) => {
             throw new Error("Failed to fetch diagnostics");
           }
           const data = await response.json();
-          console.log("Diagnostics data:", data);
+          setEngineStatus(data.engine_status);
+
+          // Simulate telemetry changes
+          await updateBatteryStatus();
         } catch (error) {
           console.error("Error fetching diagnostics:", error);
         }
@@ -109,6 +112,36 @@ const SampleSimulator = ({ dictionary, vehicleId }) => {
       console.log("Simulation stopped.");
     } catch (error) {
       console.error("Error stopping simulation:", error);
+    }
+  };
+
+  const updateBatteryStatus = async () => {
+    try {
+      const currentChange = Math.floor(Math.random() * 3); // Random integer between 0 and 5
+      const temperatureChange = Math.floor(Math.random() * 3) - 1; // Random integer between -2 and 3
+
+      const response = await fetch("/api/action/updateOne", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          collection: "vehicle_data",
+          filter: { _id: vehicleId },
+          update: {
+            $inc: {
+              Battery_Temp: temperatureChange,
+              Battery_Current: -currentChange,
+            },
+          },
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update battery status");
+      }
+      console.log("Battery status updated.");
+    } catch (error) {
+      console.error("Error updating battery status:", error);
     }
   };
 

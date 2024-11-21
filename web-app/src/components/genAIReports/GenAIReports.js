@@ -62,6 +62,7 @@ const GenAIReports = ({}) => {
 
   return (
     <>
+      <h2>GenAI Reports</h2>
       <div className={styles.reportsContainer}>
         {reports.map((report, index) => (
           <div key={index} className={styles.reportBox}>

@@ -78,12 +78,19 @@ def insert_mongo_sounds(audio_name,embedding):
 def insert_mongo_results(results, status, _id):
     # Create the results document
     entry = {"sensor":"Microphone 1","data_time":datetime.now(),"results":results}
+
+    # Determine the Battery_Status_OK based on the status
+    if status in ["Soft Material Hit", "Metallic Hit"]:
+        battery_status_ok = False
+    else:
+        battery_status_ok = True
+
     try:
         # Insert results
         mongodb_results_collection.insert_one(entry)
 
         # Update engine status
-        mongodb_vehicle_data_collection.update_one({"_id": ObjectId(_id)}, {"$set": {"Engine_Status":status}})
+        mongodb_vehicle_data_collection.update_one({"_id": ObjectId(_id)}, {"$set": {"Engine_Status":status, "Battery_Status_OK": battery_status_ok}})
     except Exception as e:
         print(f"Error inserting document: {e}")
         return False
