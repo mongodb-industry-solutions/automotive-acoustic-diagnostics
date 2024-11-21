@@ -46,14 +46,14 @@ class VehiclesViewModel: ObservableObject {
         
         URLSession.shared.dataTaskPublisher(for: request)
             .map { $0.data }
-            .handleEvents(receiveOutput: { data in
-                            // Print the raw response data
-                            if let jsonString = String(data: data, encoding: .utf8) {
-                                print("Response JSON: \(jsonString)")
-                            } else {
-                                print("Failed to convert data to string")
-                            }
-                        })
+//            .handleEvents(receiveOutput: { data in
+//                            // Print the raw response data
+//                            if let jsonString = String(data: data, encoding: .utf8) {
+//                                print("Response JSON: \(jsonString)")
+//                            } else {
+//                                print("Failed to convert data to string")
+//                            }
+//                        })
             .decode(type: [VehicleModel].self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion in
@@ -80,7 +80,7 @@ struct VehiclesView: View {
                         .foregroundColor(.gray)
                 } else {
                     ForEach(viewModel.vehicles) { vehicle in
-                        NavigationLink(destination: DefaultView()) {
+                        NavigationLink(destination: VehicleDetailView(viewModel: VehicleDetailViewModel(vehicleId: vehicle.id))) {
                             Text(vehicle.Vehicle_Name)
                         }
                     }
@@ -91,6 +91,7 @@ struct VehiclesView: View {
                 print("VehiclesView - Vehicle count: \(viewModel.vehicles.count)")
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

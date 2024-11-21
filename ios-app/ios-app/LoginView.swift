@@ -22,8 +22,11 @@ struct LoginView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 20) {
                 Image("LoginBack")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity)
                     .padding(.top, 0)
                 Text("Welcome to the Vehicle Controller")
                     .font(.title)
@@ -32,9 +35,30 @@ struct LoginView: View {
                     .padding(.bottom, 25)
                     .padding(.top, 25)
                 
-                Form {
+                VStack(spacing: 15) {
                     TextField("Username", text: $username)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                    
                     SecureField("Password", text: $password)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                    
+                    Button("Login") {
+                        // Button pressed, so log in
+                        isLoggingIn = true
+                        
+                        // Wait for 1 second and then navigate
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            isLoggingIn = false
+                            navigateToNextScreen = true
+                        }
+                    }
+                    .disabled(isLoggingIn)
+                    .padding()
+                    .foregroundColor(.accentColor)
+                    .cornerRadius(8)
+                    .padding(.horizontal)
                 }
                 
                 if isLoggingIn {
@@ -43,22 +67,8 @@ struct LoginView: View {
                 if let error = error {
                     Text("Error: \(error.localizedDescription)")
                 }
-                Button("Login")
-                {
-                    // Button pressed, so log in
-                    isLoggingIn = true
-                    
-                    // Wait for 1 second and then navigate
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        isLoggingIn = false
-                        navigateToNextScreen = true
-                    }
-                }.disabled(isLoggingIn)
                 
-                    .padding()
-                    .position(x:200, y:20)
-                    .foregroundColor(.accentColor)
-                
+                Spacer()
                 
                 HStack{
                     Text("Powered by ")
@@ -73,6 +83,7 @@ struct LoginView: View {
                 .navigationDestination(isPresented: $navigateToNextScreen) {
                     VehiclesView()
                 }
+                .padding()
             }
         }
     }
