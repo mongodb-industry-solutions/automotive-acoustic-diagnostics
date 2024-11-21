@@ -7,18 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		72818BC72CE224E00044ED56 /* ios_appApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72818BC62CE224E00044ED56 /* ios_appApp.swift */; };
+		72818BC72CE224E00044ED56 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72818BC62CE224E00044ED56 /* iOSApp.swift */; };
 		72818BC92CE224E00044ED56 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72818BC82CE224E00044ED56 /* ContentView.swift */; };
 		72818BCB2CE224E10044ED56 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 72818BCA2CE224E10044ED56 /* Assets.xcassets */; };
 		72818BCE2CE224E10044ED56 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 72818BCD2CE224E10044ED56 /* Preview Assets.xcassets */; };
+		72EF14F82CED000200E82EE5 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EF14F72CED000200E82EE5 /* LoginView.swift */; };
+		72EF14FA2CED004200E82EE5 /* DefaultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EF14F92CED004200E82EE5 /* DefaultView.swift */; };
+		72EF14FC2CED033600E82EE5 /* VehiclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EF14FB2CED033600E82EE5 /* VehiclesView.swift */; };
+		72EF14FE2CEDFECC00E82EE5 /* VehicleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EF14FD2CEDFECC00E82EE5 /* VehicleDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		72818BC32CE224E00044ED56 /* ios-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		72818BC62CE224E00044ED56 /* ios_appApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ios_appApp.swift; sourceTree = "<group>"; };
+		72818BC62CE224E00044ED56 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		72818BC82CE224E00044ED56 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		72818BCA2CE224E10044ED56 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		72818BCD2CE224E10044ED56 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		72EF14F72CED000200E82EE5 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		72EF14F92CED004200E82EE5 /* DefaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultView.swift; sourceTree = "<group>"; };
+		72EF14FB2CED033600E82EE5 /* VehiclesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehiclesView.swift; sourceTree = "<group>"; };
+		72EF14FD2CEDFECC00E82EE5 /* VehicleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,10 +59,14 @@
 		72818BC52CE224E00044ED56 /* ios-app */ = {
 			isa = PBXGroup;
 			children = (
-				72818BC62CE224E00044ED56 /* ios_appApp.swift */,
+				72818BC62CE224E00044ED56 /* iOSApp.swift */,
 				72818BC82CE224E00044ED56 /* ContentView.swift */,
 				72818BCA2CE224E10044ED56 /* Assets.xcassets */,
 				72818BCC2CE224E10044ED56 /* Preview Content */,
+				72EF14F72CED000200E82EE5 /* LoginView.swift */,
+				72EF14F92CED004200E82EE5 /* DefaultView.swift */,
+				72EF14FB2CED033600E82EE5 /* VehiclesView.swift */,
+				72EF14FD2CEDFECC00E82EE5 /* VehicleDetailView.swift */,
 			);
 			path = "ios-app";
 			sourceTree = "<group>";
@@ -137,8 +149,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72EF14FE2CEDFECC00E82EE5 /* VehicleDetailView.swift in Sources */,
+				72EF14FA2CED004200E82EE5 /* DefaultView.swift in Sources */,
+				72EF14F82CED000200E82EE5 /* LoginView.swift in Sources */,
+				72EF14FC2CED033600E82EE5 /* VehiclesView.swift in Sources */,
 				72818BC92CE224E00044ED56 /* ContentView.swift in Sources */,
-				72818BC72CE224E00044ED56 /* ios_appApp.swift in Sources */,
+				72818BC72CE224E00044ED56 /* iOSApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
