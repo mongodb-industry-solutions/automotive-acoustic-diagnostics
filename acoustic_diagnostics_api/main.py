@@ -145,13 +145,22 @@ def weighted_average(json_results):
 
 
 # CORS Middleware configuration
+origins = [
+    "http://localhost:3000",
+    "https://automotive-acoustic-diagnostics.demo.mongodb-industry-solutions.com",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow requests from this origin
+    allow_origins=origins,  # Allow requests from this origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+async def root():
+    return {"status": "OK"}
 
 @app.post("/train")
 async def train(file: UploadFile = File(...), audio_name: str = None):
