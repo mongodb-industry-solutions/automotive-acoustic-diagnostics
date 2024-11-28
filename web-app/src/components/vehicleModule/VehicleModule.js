@@ -7,29 +7,28 @@ import Image from "next/image";
 import styles from "./vehicleModule.module.css";
 import { v4 as uuidv4 } from "uuid";
 
-const VehicleModule = () => {
+const VehicleModule = ({ vehicleId, setVehicleId }) => {
   const [vehicles, setVehicles] = useState([]);
   const [vehicleData, setVehicleData] = useState(null);
-  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
   const sseConnection = useRef(null);
 
   const collection = "vehicle_data";
   const sessionId = useRef(uuidv4()); //unique id for this session
 
   const listenToSSEUpdates = useCallback(() => {
-    if (!selectedVehicleId) return;
+    if (!vehicleId) return;
 
     console.log(
       "Listening to SSE updates for collection " + collection + " and vehicle ",
-      selectedVehicleId
+      vehicleId
     );
     const eventSource = new EventSource(
       "/api/sse?sessionId=" +
-      sessionId +
-      "colName=" +
-      collection +
-      "&_id=" +
-      selectedVehicleId
+        sessionId.current +
+        "&colName=" +
+        collection +
+        "&_id=" +
+        vehicleId
     );
 
     eventSource.onopen = () => {
@@ -59,7 +58,7 @@ const VehicleModule = () => {
     sseConnection.current = eventSource;
 
     return eventSource;
-  }, [selectedVehicleId]);
+  }, [vehicleId]);
 
   useEffect(() => {
     fetchVehicles();
@@ -130,7 +129,7 @@ const VehicleModule = () => {
 
   const handleVehicleChange = (event) => {
     const vehicleId = event;
-    setSelectedVehicleId(vehicleId);
+    setVehicleId(vehicleId);
     fetchVehicleData(vehicleId);
   };
 
@@ -169,7 +168,7 @@ const VehicleModule = () => {
       <Select
         placeholder="Select a vehicle"
         onChange={handleVehicleChange}
-        value={selectedVehicleId || ""}
+        value={vehicleId || ""}
         aria-label="Vehicle Select"
       >
         {vehicles.map((vehicle) => (
@@ -194,7 +193,9 @@ const VehicleModule = () => {
           <p className="current">
             Battery Charge: {vehicleData.Battery_Current}
           </p>
-          <p className="ison">Engine Status: {vehicleData.LightsOn ? "On" : "Off"}</p>
+          <p className="ison">
+            Engine Status: {vehicleData.LightsOn ? "On" : "Off"}
+          </p>
           <Image
             className="engine-image"
             src={
@@ -221,17 +222,13 @@ const VehicleModule = () => {
               width={20}
             />
 
-            <p>
-              {
-                vehicleData.Battery_Status_OK
-                  ? "None"
-                  : "Battery Issue"
-              }
-            </p>
+            <p>{vehicleData.Battery_Status_OK ? "None" : "Battery Issue"}</p>
             <h3 className="alert-tooltip"></h3>
           </div>
           <div>{JSON.stringify(vehicleData)}</div>
-          <Button className={styles.resetBtn} onClick={resetBattery}>Reset Battery</Button>
+          <Button className={styles.resetBtn} onClick={resetBattery}>
+            Reset Battery
+          </Button>
         </>
       )}
     </div>

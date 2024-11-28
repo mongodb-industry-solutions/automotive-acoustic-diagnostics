@@ -4,7 +4,7 @@ import styles from "./genAIReports.module.css";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-const GenAIReports = ({}) => {
+const GenAIReports = ({ vehicleId }) => {
   const [reports, setReports] = useState([]);
   const sseConnection = useRef(null);
   const sessionId = useRef(uuidv4());
@@ -20,9 +20,12 @@ const GenAIReports = ({}) => {
     };
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log("Received SSE Update: New report");
-      const newReport = data.fullDocument.results[0]?.outputText;
-      setReports((prevReports) => [...prevReports, newReport]);
+
+      if (data.fullDocument.vehicle_id === vehicleId) {
+        console.log("Received SSE Update: New report");
+        const newReport = data.fullDocument.results[0]?.outputText;
+        setReports((prevReports) => [...prevReports, newReport]);
+      }
     };
     eventSource.onerror = (event) => {
       console.error("SSE Error:", event);
@@ -34,7 +37,7 @@ const GenAIReports = ({}) => {
     }
     sseConnection.current = eventSource;
     return eventSource;
-  }, []);
+  }, [vehicleId]);
 
   useEffect(() => {
     const eventSource = listenToSSEUpdates();

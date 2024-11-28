@@ -4,14 +4,14 @@ import styles from "./analyticsModule.module.css";
 import AnalyticsDashboard from "@/components/analyticsDashboard/AnalyticsDashboard";
 import GenAIReports from "@/components/genAIReports/GenAIReports";
 
-const AnalyticsModule = ({}) => {
+const AnalyticsModule = ({ vehicleId }) => {
   return (
     <div className={styles.analyticsContainer}>
       <div className={styles.analyticsDashboard}>
-        <AnalyticsDashboard />
+        <AnalyticsDashboard vehicleId={vehicleId} />
       </div>
       <div className={styles.genAIReports}>
-        <GenAIReports />
+        <GenAIReports vehicleId={vehicleId} />
       </div>
     </div>
   );

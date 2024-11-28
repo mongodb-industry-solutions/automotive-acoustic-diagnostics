@@ -12,7 +12,7 @@ MONGODB_URI = os.getenv("MONGODB_URI")
 VEHICLE_ID = os.getenv("VEHICLE_ID")
 
 client = MongoClient(MONGODB_URI)
-db = client["connected_vehicle"]
+db = client["automotive_acoustic_diagnostics"]
 coll = db["vehicle_data"]
 
 # Global vehicle instance

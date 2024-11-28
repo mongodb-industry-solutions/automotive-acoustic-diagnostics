@@ -77,7 +77,7 @@ def insert_mongo_sounds(audio_name,embedding):
 
 def insert_mongo_results(results, status, _id):
     # Create the results document
-    entry = {"sensor":"Microphone 1","data_time":datetime.now(),"results":results}
+    entry = {"sensor":"Microphone 1","data_time":datetime.now(), "vehicle_id":ObjectId(_id), "results":results}
 
     # Determine the Battery_Status_OK based on the status
     if status in ["Soft Material Hit", "Metallic Hit"]:

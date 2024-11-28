@@ -53,6 +53,7 @@ export async function POST(req, { params }) {
             { status: 400 }
           );
         }
+        console.log(update);
         result = await col.updateOne(filter, update, {
           upsert: upsert || false,
         });

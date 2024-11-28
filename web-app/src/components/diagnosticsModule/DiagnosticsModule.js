@@ -9,14 +9,12 @@ import Button from "@leafygreen-ui/button";
 import Stepper, { Step } from "@leafygreen-ui/stepper";
 import styles from "./diagnosticsModule.module.css";
 
-const DiagnosticsModule = ({}) => {
+const DiagnosticsModule = ({ vehicleId }) => {
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recording, setRecording] = useState(false);
   const [dictionary, setDictionary] = useState([]);
   const [mode, setMode] = useState("live");
-
-  const vehicleId = "658876fde27a68ff985cdb4d";
 
   useEffect(() => {
     fetchDictionary();

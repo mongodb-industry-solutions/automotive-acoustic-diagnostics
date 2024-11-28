@@ -4,8 +4,9 @@ import styles from "./analyticsDashboard.module.css";
 import { useState, useEffect, useRef, useCallback } from "react";
 import ChartsEmbedSDK from "@mongodb-js/charts-embed-dom";
 import { v4 as uuidv4 } from "uuid";
+import { ObjectId } from "bson";
 
-const AnalyticsDashboard = ({}) => {
+const AnalyticsDashboard = ({ vehicleId }) => {
   const [rendered, setRendered] = useState(false);
   const dashboardDiv = useRef(null);
   const sseConnection = useRef(null);
@@ -33,13 +34,15 @@ const AnalyticsDashboard = ({}) => {
       "/api/sse?sessionId=" + sessionId.current + "&colName=" + collection
     );
     eventSource.onopen = () => {
-      console.log("SSE connection opened.");
+      console.log("SSE connection opened - dashboard.");
     };
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log("Received SSE Update:", data);
-      // Refresh the dashboard
-      dashboard.refresh();
+      if (data.fullDocument.vehicle_id === vehicleId) {
+        console.log("Received SSE Update:", data);
+        // Refresh the dashboard
+        dashboard.refresh();
+      }
     };
     eventSource.onerror = (event) => {
       console.error("SSE Error:", event);
@@ -47,17 +50,19 @@ const AnalyticsDashboard = ({}) => {
     // Close the previous connection if it exists
     if (sseConnection.current) {
       sseConnection.current.close();
-      console.log("Previous SSE connection closed.");
+      console.log("Previous SSE connection closed - dashboard.");
     }
     sseConnection.current = eventSource;
     return eventSource;
-  }, [dashboard]);
+  }, [dashboard, vehicleId]);
 
   useEffect(() => {
-    dashboard
-      .render(dashboardDiv.current)
-      .then(() => setRendered(true))
-      .catch((err) => console.log("Error during Charts rendering.", err));
+    if (!rendered) {
+      dashboard
+        .render(dashboardDiv.current)
+        .then(() => setRendered(true))
+        .catch((err) => console.log("Error during Charts rendering.", err));
+    }
 
     if (dashboardDiv.current) {
       dashboardDiv.current.style.height = "600px";
@@ -85,6 +90,19 @@ const AnalyticsDashboard = ({}) => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [sseConnection]);
+
+  useEffect(() => {
+    if (vehicleId) {
+      dashboard
+        .setFilter({
+          $or: [
+            { _id: ObjectId.createFromHexString(vehicleId) },
+            { vehicle_id: ObjectId.createFromHexString(vehicleId) },
+          ],
+        })
+        .catch((err) => console.log("Error adding filter to dashboard.", err));
+    }
+  }, [vehicleId, dashboard]);
 
   return (
     <>
