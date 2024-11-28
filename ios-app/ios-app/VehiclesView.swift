@@ -27,7 +27,7 @@ class VehiclesViewModel: ObservableObject {
     }
     
     private func fetchVehicles() {
-        guard let url = URL(string: "http://localhost:3000/api/action/find") else {
+        guard let url = URL(string: "https://automotive-acoustic-diagnostics.demo.mongodb-industry-solutions.com/api/action/find") else {
             print("Invalid URL")
             return
         }

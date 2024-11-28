@@ -58,7 +58,7 @@ class VehicleDetailViewModel: ObservableObject {
     }
     
     private func fetchVehicleDetails() {
-        guard let url = URL(string: "http://localhost:3000/api/action/findOne") else {
+        guard let url = URL(string: "https://automotive-acoustic-diagnostics.demo.mongodb-industry-solutions.com/api/action/findOne") else {
             print("Invalid URL")
             return
         }
@@ -110,7 +110,7 @@ class VehicleDetailViewModel: ObservableObject {
         }
     }
     private func updateVehicleDetails(_ updates: [String: Any], completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "http://localhost:3000/api/action/updateOne") else {
+        guard let url = URL(string: "https://automotive-acoustic-diagnostics.demo.mongodb-industry-solutions.com/api/action/updateOne") else {
             print("Invalid URL")
             completion(false)
             return
