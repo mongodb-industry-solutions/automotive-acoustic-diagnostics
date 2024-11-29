@@ -1,0 +1,13 @@
+.reportsContainer {
+  max-height: 400px; /* Adjust the height as needed */
+  overflow-y: scroll;
+  border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+  padding: 10px; /* Optional: Add some padding */
+  border-radius: 10px;
+}
+.reportBox {
+  margin-bottom: 10px; /* Optional: Add some space between reports */
+  padding: 10px; /* Optional: Add some padding inside each report box */
+  background-color: #f4f4f4; /* Optional: Add a background color */
+  border: 1px solid #ddd; /* Optional: Add a border to each report box */
+}

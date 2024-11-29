@@ -1,0 +1,12 @@
+.analyticsContainer {
+  display: flex;
+  width: 100%;
+}
+.analyticsDashboard {
+  flex: 7; /* 70% of the space */
+  padding: 10px; /* Optional: Add some padding for better spacing */
+}
+.genAIReports {
+  flex: 3; /* 30% of the space */
+  padding: 10px; /* Optional: Add some padding for better spacing */
+}
