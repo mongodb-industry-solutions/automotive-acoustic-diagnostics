@@ -1,42 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Web portal UI
 
-TODO:
+## Setup MongoDB Atlas Charts
 
-- Charts
-- Run
-- Env variables
+1. In Atlas, go to Charts and click the down arrow next to "Add Dashboard", then click "Import Dashboard".
+2. Select the file [`Acoustic Vehicle Diagnosis Dashboard.charts`](../utils/charts/Acoustic%20Vehicle%20Diagnosis%20Dashboard.charts) from the `utils/charts` folder and click "Next".
+3. Click on the pencil icon and ensure the database is correctly assigned to the one previously created.
+4. Click "Save", and then "Save" again.
+5. Click the new dashboard to see analytics on the sounds that are being detected by the microphone.
 
-## Getting Started
+> [!Note]
+> You will need the base URL and dashboard IDs to set up your environment variables later (`NEXT_PUBLIC_CHARTS_BASE_URL`, `NEXT_PUBLIC_CHARTS_DASHBOARD_ID`).
 
-First, run the development server:
+## Install the Node dependencies
+
+To install the node dependencies run the following command in your terminal:
+
+```
+npm install
+```
+
+## Run the web portal
+
+Update the environment variables, you can create a `.env` file from the `EXAMPLE.env` file provided.
+
+```
+cp EXAMPLE.env .env
+```
+
+Once you have updated the environment variables with your own values, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Great! You have now completed the setup and should have a fully functional demo of the web portal. If you would like to further extend the demo, there is an optional last step that allows you to control the engine and digital twin from your phone. If you are interested, please navigate to [Step 6 - Control your vehicle from a mobile device](../ios-app/README.md) for more details.

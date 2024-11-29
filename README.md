@@ -1,6 +1,6 @@
 # Acoustic Based Real Time Diagnosis for machines using Vector Search
 
-![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white) ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Swift](https://img.shields.io/badge/swift-F54A2A?style=for-the-badge&logo=swift&logoColor=white) ![Raspberry Pi](https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white) ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi) ![Swift](https://img.shields.io/badge/swift-F54A2A?style=for-the-badge&logo=swift&logoColor=white) ![Raspberry Pi](https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)
 
 In this repo we will show how MongoDB Atlas can be used for a fully comprehensive connected equipment loop, from using Vector Search to diagnose the status of a machine based on its real-time sound, to connecting to AWS Bedrock to receive human readable reports that can be used by operators to fix the machine. And finally use MongoDB to store operational equipment data to create alerts or a dashboard and understand how the production process is going.
 
@@ -8,9 +8,9 @@ In the curren era of connected equipments, companies can use all the potential o
 
 In this demo we want to show the comprehensive nature of MongoDB and how all its tools can be used in a really powerful combination. To take it to reality, we are utilizing real hardware combined with Software. If you want to replicate this demo, you have two options:
 
-a) Copy our setup as close as possible. We will share below all the hardware components we have.
+- A) Copy our setup as close as possible. We will share below all the hardware components we have.
 
-b) We will have a 'lite' version of this demo where through a simulator, you will be able to replicate it without the need of the hardware.
+- B) We will have a 'lite' version of this demo where through a simulator, you will be able to replicate it without the need of the hardware.
 
 In a very high level, this demo is composed of 3 main components:
 
@@ -65,7 +65,7 @@ After executing these commands, you will have the following collections:
 > You will need the database name to set up your environment variables later (`DATABASE_NAME`).
 > If the database name has not been specified, the default name will be `automotive_acoustic_diagnostics`.
 
-## Step 3 - Enable Audio-Based Real time Diagnostic using MongoDB Vector Search
+## Step 3 - Enable real-time acoustic diagnostics using Atlas Vector Search
 
 Demonstration of MongoDB's Vector Search capabilities for anomaly detection through sound input. This demo enables real-time diagnosis by analyzing the emitted audio, allowing us to diagnose its condition—whether it's operating normally, stopped, or experiencing any issues. This analysis has been implemented in a Python module. We use [FastAPI](https://fastapi.tiangolo.com/) to serve the functionality to the web app via REST API, [PANNs inference](https://github.com/qiuqiangkong/audioset_tagging_cnn) to create the embedding of the audio samples, [MongoDB Atlas](https://www.mongodb.com/lp/platform/atlas) to store the resulting embeddings, and [Atlas Vector Search](https://www.mongodb.com/products/platform/atlas-vector-search) to classify new audio samples.
 

@@ -1,51 +1,80 @@
-### 1. MongoDB Atlas Connection
+# Acoustic Diagnostics API
 
-Create a file called `.env` in the acoustic_diagnostics directory alongside the `add_audio.py` file and add your atlas connection string, in the following format:
+## Prerequisites
 
-`MONGO_CONNECTION_STRING="mongodb+srv://connectionstringfromatlas"`
+- [FFmpeg](https://ffmpeg.org/download.html)
 
-### 2. Install Python Modules
+  - **Usage**: FFmpeg is used for audio processing, specifically to convert and manipulate audio files, which is a crucial part of diagnosing the wind turbine’s condition.
+  - **Installation**:
+    - **macOS**:
+      - Install using Homebrew:
+        ```bash
+        brew install ffmpeg
+        ```
 
-In your terminal, navigate to the acoustic_diagnostics directory.
+- [wget](https://www.gnu.org/software/wget/)
 
-```bash
-cd acoustic_diagnostics
-```
+  - **Usage**: `wget` is used to download the model files that are essential for audio inference in this project.
+  - **Installation**:
+    - **macOS**:
+      - Install using Homebrew:
+        ```bash
+        brew install wget
+        ```
 
-Then install the required python modules.
+## Create an Atlas Search Index
 
-```bash
-pip install -r requirements.txt
-```
+Go to MongoDB Atlas and create an Atlas Search Index in the demo database you created in [Step 2](../README.md#step-2---set-up-mongodb-atlas). This index should be created in the `sounds` collection and using the content of [utils/indexes/search_index.json](../utils/indexes/search_index.json).
 
-### 3. Record Audio Files
-
-Run `python add_audio.py`
-
-Select the audio input by typing the relevant number and then press enter. Record each sound in sequence.
-
-> [!TIP]
-> We recommend using an external microphone and placing it very close to the fan or audio source.
-
-### 4. Create a Search Index
-
-Go to MongoDB Atlas and create an Atlas Search Index in the **audio** database **sounds** collection and using the content of `searchindex.json`
-
-```
+```json
 {
-    "mappings": {
-      "dynamic": true,
-      "fields": {
-        "emb": {
-          "dimensions": 2048,
-          "similarity": "cosine",
-          "type": "knnVector"
-        }
+  "mappings": {
+    "dynamic": true,
+    "fields": {
+      "emb": {
+        "dimensions": 2048,
+        "similarity": "cosine",
+        "type": "knnVector"
       }
     }
   }
+}
 ```
 
-### 5. Query the Database
+## Install the python dependencies
 
-Run `python live_query.py` and place your microphone next to the fan.
+1. Create a virtual environment:
+   ```bash
+   python3 -m venv .venv
+   ```
+2. Activate the virtual environment:
+   ```bash
+   source .venv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
+   python3 -m pip install -r requirements.txt
+   ```
+4. Download the PANNs model checkpoint file and move it to the correct path:
+   ```bash
+   wget https://zenodo.org/record/3987831/files/Cnn14_mAP%3D0.431.pth?download=1 -O Cnn14_mAP=0.431.pth
+   mv Cnn14_mAP=0.431.pth ~/panns_data
+   ```
+
+## Run the diagnostics API
+
+Update the environment variables, you can create a `.env` file from the `EXAMPLE.env` file provided.
+
+```
+cp EXAMPLE.env .env
+```
+
+Once you have updated the environment variables with your own values, simply run the command below in your terminal.
+
+```bash
+uvicorn main:app --reload --port 8000
+```
+
+---
+
+And that's it! If you have followed all the steps above, you are now ready to proceed to [Step 4 - Integrate AWS Bedrock for AI-enhanced analytics](../README.md#step-4---integrate-aws-bedrock-for-ai-enhanced-analytics).
