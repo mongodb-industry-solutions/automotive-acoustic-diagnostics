@@ -1,5 +1,15 @@
 .DS_Store
 engine_controler/realm/config.js
-.env
+.env*
 node_modules
 **/**.pyc
+**/.venv
+**/node_modules
+**/__pycache__
+
+.vscode
+
+docker-compose-ecs.yml
+docker-compose.yml
+Makefile
+ecs-params.yml
