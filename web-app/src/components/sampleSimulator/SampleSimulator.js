@@ -120,22 +120,37 @@ const SampleSimulator = ({ dictionary, vehicleId }) => {
       const currentChange = Math.floor(Math.random() * 3); // Random integer between 0 and 5
       const temperatureChange = Math.floor(Math.random() * 3) - 1; // Random integer between -2 and 3
 
-      const response = await fetch("/api/action/updateOne", {
+      const pipeline = [
+        { $match: { _id: vehicleId } },
+        {
+          $set: {
+            Battery_Temp: { $add: ["$Battery_Temp", temperatureChange] },
+            Battery_Current: {
+              $max: [10, { $subtract: ["$Battery_Current", currentChange] }],
+            },
+          },
+        },
+
+        {
+          $merge: {
+            into: "vehicle_data",
+            whenMatched: "merge",
+            whenNotMatched: "discard",
+          },
+        },
+      ];
+
+      const response = await fetch("/api/action/aggregate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           collection: "vehicle_data",
-          filter: { _id: vehicleId },
-          update: {
-            $inc: {
-              Battery_Temp: temperatureChange,
-              Battery_Current: -currentChange,
-            },
-          },
+          pipeline: pipeline,
         }),
       });
+
       if (!response.ok) {
         throw new Error("Failed to update battery status");
       }
