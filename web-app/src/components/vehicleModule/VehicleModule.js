@@ -288,7 +288,6 @@ const VehicleModule = ({ vehicleId, setVehicleId }) => {
               height={20}
               width={20}
             />
-
             <p>{vehicleData.Battery_Status_OK ? "None" : "Engine Issue"}</p>
             <h3 className="alert-tooltip"></h3>
           </div>
