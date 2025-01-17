@@ -163,6 +163,72 @@ const VehicleModule = ({ vehicleId, setVehicleId }) => {
     }
   };
 
+  const startEngine = async () => {
+    try {
+      const response = await fetch("/api/action/updateOne", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          collection: collection,
+          filter: { _id: vehicleData._id },
+          update: {
+            $set: {
+              LightsOn: true,
+              Battery_Temp: 24,
+              Battery_Current: 100,
+              Battery_Status_OK: true,
+              Driver_Door_Open: false,
+              Hood_Open: false,
+              Engine_Status: "Running Normally",
+            },
+          },
+        }),
+      });
+      if (response.ok) {
+        console.log("Engine started successfully");
+      } else {
+        console.error("Failed to start engine");
+      }
+    } catch (error) {
+      console.error("Error starting engine:", error);
+    }
+  };
+
+  const stopEngine = async () => {
+    try {
+      const response = await fetch("/api/action/updateOne", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          collection: collection,
+          filter: { _id: vehicleData._id },
+          update: {
+            $set: {
+              LightsOn: false,
+              Battery_Temp: 24,
+              Battery_Current: 100,
+              Battery_Status_OK: true,
+              Driver_Door_Open: false,
+              Hood_Open: false,
+              Engine_Status: "Engine Off",
+            },
+          },
+        }),
+      });
+      if (response.ok) {
+        console.log("Engine stopped successfully");
+      } else {
+        console.error("Failed to stop engine");
+      }
+    } catch (error) {
+      console.error("Error stopping engine:", error);
+    }
+  };
+
   return (
     <div className="vehicle-container">
       <Select
@@ -212,6 +278,7 @@ const VehicleModule = ({ vehicleId, setVehicleId }) => {
             <p>Active Alerts:</p>
             <Image
               className={styles.alertImg}
+              unoptimized={true}
               src={
                 vehicleData.Battery_Status_OK
                   ? "/vehicle/alert_icon_gray.png"
@@ -221,11 +288,26 @@ const VehicleModule = ({ vehicleId, setVehicleId }) => {
               height={20}
               width={20}
             />
-
-            <p>{vehicleData.Battery_Status_OK ? "None" : "Battery Issue"}</p>
+            <p>{vehicleData.Battery_Status_OK ? "None" : "Engine Issue"}</p>
             <h3 className="alert-tooltip"></h3>
           </div>
-          <div>{JSON.stringify(vehicleData)}</div>
+          {/* <div>{JSON.stringify(vehicleData)}</div> */}
+          <Button
+            className={styles.btn}
+            variant="primaryOutline"
+            onClick={startEngine}
+            disabled={vehicleData.LightsOn}
+          >
+            Start Engine
+          </Button>
+          <Button
+            className={styles.btn}
+            variant="dangerOutline"
+            onClick={stopEngine}
+            disabled={!vehicleData.LightsOn}
+          >
+            Stop Engine
+          </Button>
           <Button className={styles.resetBtn} onClick={resetBattery}>
             Reset Battery
           </Button>

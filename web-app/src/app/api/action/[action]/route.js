@@ -13,12 +13,20 @@ export async function POST(req, { params }) {
     const { action } = await params;
     const body = await req.json();
 
-    const { collection, filter, projection, update, upsert, sort, limit } =
-      body;
+    const {
+      collection,
+      filter,
+      projection,
+      update,
+      upsert,
+      sort,
+      limit,
+      pipeline,
+    } = body;
 
-    if (!collection || !filter) {
+    if (!collection || (!filter && action !== "aggregate")) {
       return NextResponse.json(
-        { message: "Missing required fields: collection, filter" },
+        { message: "Missing required fields: collection, filter/pipeline" },
         { status: 400 }
       );
     }
@@ -27,9 +35,18 @@ export async function POST(req, { params }) {
     const db = client.db(database);
     const col = db.collection(collection);
 
-    // Transform _id to ObjectId if present in filter
-    if (filter._id) {
+    // Transform _id to ObjectId if present in filter or pipeline
+    // TODO: This is a temporary fix, it should be handled using EJSON
+    if (filter && filter._id) {
       filter._id = ObjectId.createFromHexString(filter._id);
+    }
+
+    if (pipeline) {
+      pipeline.forEach((stage) => {
+        if (stage.$match && stage.$match._id) {
+          stage.$match._id = ObjectId.createFromHexString(stage.$match._id);
+        }
+      });
     }
 
     let result;
@@ -60,6 +77,15 @@ export async function POST(req, { params }) {
         break;
       case "deleteMany":
         result = await col.deleteMany(filter);
+        break;
+      case "aggregate":
+        if (!pipeline) {
+          return NextResponse.json(
+            { message: "Missing required field: pipeline" },
+            { status: 400 }
+          );
+        }
+        result = await col.aggregate(pipeline).toArray();
         break;
       default:
         return NextResponse.json(
