@@ -9,7 +9,9 @@ node_modules
 
 .vscode
 
+# Deployment
 docker-compose-ecs.yml
 docker-compose.yml
 Makefile
 ecs-params.yml
+policy.json
