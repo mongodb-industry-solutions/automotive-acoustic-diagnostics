@@ -10,7 +10,6 @@ import styles from "./InfoWizard.module.css";
 import Button from "@leafygreen-ui/button";
 import { Tabs, Tab } from "@leafygreen-ui/tabs";
 
-
 const InfoWizard = ({
   open,
   setOpen,
@@ -23,40 +22,48 @@ const InfoWizard = ({
   return (
     <>
       {/* Bigger button for navbars */}
-      <Button onClick={() => setOpen((prev) => !prev)} leftGlyph={<Icon glyph={iconGlyph} />}>
+      <Button
+        onClick={() => setOpen((prev) => !prev)}
+        leftGlyph={<Icon glyph={iconGlyph} />}
+      >
         Tell me more!
       </Button>
 
       <Modal open={open} setOpen={setOpen} className={styles.modal}>
         <div className={styles.modalContent}>
-          <Tabs aria-label="info wizard tabs" setSelected={setSelected} selected={selected}>
+          <Tabs
+            aria-label="info wizard tabs"
+            setSelected={setSelected}
+            selected={selected}
+          >
             {sections.map((tab, tabIndex) => (
               <Tab key={tabIndex} name={tab.heading}>
-                
-              
                 {tab.content.map((section, sectionIndex) => (
                   <div key={sectionIndex} className={styles.section}>
-                    {section.heading && <H3 className={styles.modalH3}>{section.heading}</H3>}
+                    {section.heading && (
+                      <H3 className={styles.modalH3}>{section.heading}</H3>
+                    )}
                     {section.body &&
                       (Array.isArray(section.body) ? (
                         <ul className={styles.list}>
-                          {
-                            section.body.map((item, idx) => (
-                              typeof (item) == 'object'
-                                ? <li>
-                                  {item.heading}
-                                  <ul className={styles.list}>
-                                    {
-                                      item.body.map((subItem, idx) => (
-                                        <li key={idx}><Body>{subItem}</Body></li>
-                                      ))
-                                    }
-                                  </ul>
-                                </li>
-                                : <li key={idx}><Body>{item}</Body></li>
+                          {section.body.map((item, idx) =>
+                            typeof item == "object" ? (
+                              <li key={idx}>
+                                {item.heading}
+                                <ul className={styles.list}>
+                                  {item.body.map((subItem, idx) => (
+                                    <li key={idx}>
+                                      <Body>{subItem}</Body>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </li>
+                            ) : (
+                              <li key={idx}>
+                                <Body>{item}</Body>
+                              </li>
                             )
-                            )
-                          }
+                          )}
                         </ul>
                       ) : (
                         <Body>{section.body}</Body>
