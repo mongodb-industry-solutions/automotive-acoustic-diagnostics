@@ -17,8 +17,8 @@ const OverviewComp = () => {
         src="/demooverview.png"
         className={styles.architectureImage}
         alt="Flow"
-        height={500}
-        width={500}
+        height={1000}
+        width={1000}
       ></Image>
 
       <H3 className={styles.compTitle}>Check out our related resources!</H3>
@@ -27,7 +27,7 @@ const OverviewComp = () => {
         <Card className={styles.card}>
           <a
             className={styles.title}
-            href="https://www.mongodb.com/solutions/solutions-library"
+            href="https://www.mongodb.com/solutions/solutions-library/automotive-diagnostics"
           >
             <Image
               src="/logos/read.png"
@@ -40,12 +40,12 @@ const OverviewComp = () => {
           </a>
           <Description className={styles.description}>
             {" "}
-            (Coming soon!) Learn more about using vector search and generative
-            AI for root-cause diagnostics
+            Learn more about using vector search and generative AI for
+            root-cause diagnostics
           </Description>
 
           <Link
-            href="https://www.mongodb.com/resources/solutions/use-cases/generative-ai-predictive-maintenance-applications"
+            href="https://www.mongodb.com/solutions/solutions-library/automotive-diagnostics"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.button}
@@ -74,7 +74,7 @@ const OverviewComp = () => {
             yourself.
           </Description>
           <Link
-            href="https://github.com/mongodb-industry-solutions/Predictive-Maintenance-Hosted"
+            href="https://github.com/mongodb-industry-solutions/automotive-acoustic-diagnostics"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.button}
@@ -86,7 +86,7 @@ const OverviewComp = () => {
         <Card className={styles.card}>
           <a
             className={styles.title}
-            href="https://www.youtube.com/watch?v=oFCJmhEl2Pg&list=PL4RCxklHWZ9tqWItuaEaeIYWsAyWpVQ1H"
+            href="https://www.youtube.com/watch?v=aQNFAjJVDpY"
           >
             <Image
               src="/logos/youtube.png"
@@ -104,7 +104,7 @@ const OverviewComp = () => {
             manufacturing and automotive industries.
           </Description>
           <Link
-            href="https://www.youtube.com/watch?v=YwTWpUl3QS8"
+            href="https://www.youtube.com/watch?v=aQNFAjJVDpY"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.button}
