@@ -75,12 +75,15 @@ For a step-by-step guide on how to set up this component, navigate to the [acous
 
 We have followed a simple approach to integrate with AWS Bedrock, which can serve as a baseline for more complex approaches, implementing more real-time data from sensors and even implementing a RAG architecture.
 
-We are going to use Atlas Triggers to integrate with AWS Bedrock.
+We are going to use Atlas Triggers, AWS EventBridge and AWS Lambda Functions to integrate with AWS Bedrock.
+
+### MongoDB Trigger Configuration
 
 1. Navigate to the Triggers section in MongoDB Atlas.
 2. Create a new trigger that watches for update operations in the `vehicle_data` collection.
 3. Turn the "Full Document" toggle on to have access to all the document fields in the change event.
-4. In the advanced section, copy the match expression below. This will allow us to generate reports only for certain states of interest.
+4. In the event type section, select "EventBridge" and add your associated AWS account ID. Check the documentation if you want to learn more about how to [send trigger events to AWS EventBridge](https://www.mongodb.com/docs/atlas/app-services/triggers/aws-eventbridge/).
+5. In the advanced section, copy the match expression below. This will allow us to generate reports only for certain states of interest.
    ```json
    {
      "operationType": "update",
@@ -97,7 +100,43 @@ We are going to use Atlas Triggers to integrate with AWS Bedrock.
      ]
    }
    ```
-5. Leave all the other fields as default, give your trigger a name, and copy the function available at [utils/triggers/generate_bedrock_report.js](utils/triggers/generate_bedrock_report.js). Remember to add the required dependencies (`"@aws-sdk/client-bedrock-runtime"`, `"text-decoding"`), and replace the placeholder in line 8 with your own cluster name.
+
+### AWS Configuration
+
+To connect MongoDB Atlas with AWS Bedrock, you need to set up an AWS Lambda function and configure AWS EventBridge. Follow these steps:
+
+1. **Create the Lambda Function:**  
+   In your AWS Console, create a new Lambda function. Use the Node.js 22 runtime.
+
+2. **Deploy the Lambda Code:**  
+   Upload the provided code to your Lambda function. Make sure you are authenticated with the AWS CLI and have the right permissions. Run the command below, replacing `<your-function-name>` with your Lambda function's name:
+
+   ```bash
+   aws lambda update-function-code \
+     --function-name <your-function-name> \
+     --zip-file fileb://utils/lambda/function.zip
+   ```
+
+3. **Set Environment Variables and Permissions:**  
+   In the Lambda function settings, add your `MONGODB_URI` as an environment variable. Also, make sure your Lambda execution role has permission to invoke Bedrock models.
+
+4. **Connect EventBridge to Lambda:**  
+   In the AWS Console, go to Amazon EventBridge.
+
+- Choose **Partner event sources** in the navigation pane.
+- Find the pending MongoDB trigger source and click **Associate with event bus**.
+- Set any required access permissions and click **Associate**.
+- Once the status changes to Active, note the event bus name for later.
+
+5. **Create an EventBridge Rule:**
+
+- In EventBridge, create a new rule.
+- Give it a name and description.
+- Select the event bus you just associated.
+- For the event source, choose "EventBridge partners," then select MongoDB and all events.
+- Set your Lambda function as the target and create the rule.
+
+After these steps, your Lambda function will be ready to connect MongoDB Atlas and AWS Bedrock for AI-powered analytics!
 
 ## Step 5 - Run the web portal UI
 
