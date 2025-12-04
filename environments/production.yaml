@@ -1,0 +1,29 @@
+env:
+  NODE_ENV: production
+  APP_NAME: automotive-acoustic-diagnostics
+  DATABASE_NAME: automotive_acoustic_diagnostics
+  DIAGNOSTICS_API_URL: "http://localhost:8000"
+
+# Secrets for frontend (if any needed)
+envSecrets:
+  MONGODB_URI: automotive-acoustic-diagnostics
+  CHARTS_BASE_URL: automotive-acoustic-diagnostics
+  CHARTS_DASHBOARD_ID: automotive-acoustic-diagnostics
+
+# Sidecar container configuration (frontend + backend in same pod)
+sidecarContainers:
+  - name: backend
+    image: 795250896452.dkr.ecr.us-east-1.amazonaws.com/industrysolutions/automotive-acoustic-diagnostics-backend-prod:latest
+    ports:
+      - containerPort: 8000
+        name: backend
+    env:
+      - name: MONGODB_URI
+        valueFrom:
+          secretKeyRef:
+            name: automotive-acoustic-diagnostics
+            key: MONGODB_URI
+      - name: DATABASE_NAME
+        value: "automotive_acoustic_diagnostics"
+      - name: APP_NAME
+        value: "automotive-acoustic-diagnostics"

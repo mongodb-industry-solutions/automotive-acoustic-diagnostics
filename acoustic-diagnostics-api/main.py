@@ -22,7 +22,7 @@ connection_string = os.getenv('MONGODB_URI')
 database_name = os.getenv('DATABASE_NAME')
 
 # Initialize the AudioTagging model
-model = AudioTagging(checkpoint_path=None, device='cuda')
+model = AudioTagging(checkpoint_path=None, device='cpu')
 
 # Deine MongoDB client
 client = MongoClient(connection_string, tlsCAFile=certifi.where())
@@ -147,7 +147,9 @@ def weighted_average(json_results):
 # CORS Middleware configuration
 origins = [
     "http://localhost:3000",
-    "https://automotive-acoustic-diagnostics.demo.mongodb-industry-solutions.com",
+    "http://localhost:8080",
+    "https://automotive-acoustic-diagnostics.industrysolutions.staging.corp.mongodb.com",
+    "https://automotive-acoustic-diagnostics.industrysolutions.prod.corp.mongodb.com",
 ]
 
 app.add_middleware(

@@ -8,6 +8,7 @@ const SampleSimulator = ({ dictionary, vehicleId }) => {
   const [engineStatus, setEngineStatus] = useState("");
   const [selectedAudio, setSelectedAudio] = useState("");
   const [audioOptions, setAudioOptions] = useState([]);
+  const [diagnosticsApiUrl, setDiagnosticsApiUrl] = useState("http://localhost:8000");
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -24,9 +25,24 @@ const SampleSimulator = ({ dictionary, vehicleId }) => {
   }, [dictionary]);
 
   useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch("/api/config");
+        if (response.ok) {
+          const config = await response.json();
+          setDiagnosticsApiUrl(config.diagnosticsApiUrl);
+        }
+      } catch (error) {
+        console.error("Error fetching config:", error);
+      }
+    };
+    fetchConfig();
+  }, []);
+
+  useEffect(() => {
     if (isRunning) {
       intervalRef.current = setInterval(async () => {
-        const url = `${process.env.NEXT_PUBLIC_DIAGNOSTICS_API_URL}/simulate?_id=${vehicleId}&audio_name=${selectedAudio}`;
+        const url = `${diagnosticsApiUrl}/simulate?_id=${vehicleId}&audio_name=${selectedAudio}`;
         try {
           const response = await fetch(url);
           if (!response.ok) {
@@ -45,7 +61,7 @@ const SampleSimulator = ({ dictionary, vehicleId }) => {
       clearInterval(intervalRef.current);
     }
     return () => clearInterval(intervalRef.current);
-  }, [isRunning, selectedAudio, vehicleId]);
+  }, [isRunning, selectedAudio, vehicleId, diagnosticsApiUrl]);
 
   const handleStartSimulation = async () => {
     try {

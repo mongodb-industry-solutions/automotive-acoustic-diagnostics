@@ -1,4 +1,24 @@
 let stopRecorder;
+let cachedConfig = null;
+
+const getConfig = async () => {
+  if (cachedConfig) {
+    return cachedConfig;
+  }
+  try {
+    const response = await fetch("/api/config");
+    if (!response.ok) {
+      throw new Error("Failed to fetch config");
+    }
+    cachedConfig = await response.json();
+    return cachedConfig;
+  } catch (error) {
+    console.error("Error fetching config:", error);
+    // Fallback to default
+    cachedConfig = { diagnosticsApiUrl: "http://localhost:8000" };
+    return cachedConfig;
+  }
+};
 
 export const startRecording = (
   selectedDeviceId,
@@ -72,7 +92,8 @@ const sendAudioToBackend = async (audioBlob, audioName, _id) => {
   const formData = new FormData();
   formData.append("file", audioBlob, "recording.webm");
 
-  let url = process.env.NEXT_PUBLIC_DIAGNOSTICS_API_URL;
+  const config = await getConfig();
+  let url = config.diagnosticsApiUrl;
 
   if (audioName == null) {
     url += `/diagnose?_id=${_id}`;

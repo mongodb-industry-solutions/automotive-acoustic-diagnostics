@@ -5,7 +5,10 @@ import { ObjectId } from "mongodb";
 export async function POST(req, { params }) {
   try {
     if (!process.env.DATABASE_NAME) {
-      throw new Error('Invalid/Missing environment variable: "DATABASE_NAME"');
+      return NextResponse.json(
+        { message: 'Invalid/Missing environment variable: "DATABASE_NAME"' },
+        { status: 500 }
+      );
     }
 
     const database = process.env.DATABASE_NAME;
@@ -31,7 +34,7 @@ export async function POST(req, { params }) {
       );
     }
 
-    const client = await clientPromise;
+    const client = await clientPromise();
     const db = client.db(database);
     const col = db.collection(collection);
 

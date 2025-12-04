@@ -1,32 +1,34 @@
 import { MongoClient } from "mongodb";
 import { EJSON } from "bson";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
-}
-if (!process.env.DATABASE_NAME) {
-  throw new Error('Invalid/Missing environment variable: "DATABASE_NAME"');
-}
-
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.DATABASE_NAME;
 const options = { appName: "automotive-acoustic-diagnostics" };
 
-let client;
-let clientPromise;
 const changeStreams = new Map();
 
-if (!global._mongoClientPromise) {
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
-  global._mongoClientPromise = clientPromise;
-} else {
-  clientPromise = global._mongoClientPromise;
+function getClientPromise() {
+  if (!process.env.MONGODB_URI) {
+    throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+  }
+
+  const uri = process.env.MONGODB_URI;
+
+  if (!global._mongoClientPromise) {
+    const client = new MongoClient(uri, options);
+    const clientPromise = client.connect();
+    global._mongoClientPromise = clientPromise;
+  }
+
+  return global._mongoClientPromise;
 }
 
 async function getChangeStream(filter, key) {
+  if (!process.env.DATABASE_NAME) {
+    throw new Error('Invalid/Missing environment variable: "DATABASE_NAME"');
+  }
+  const dbName = process.env.DATABASE_NAME;
+
   if (!changeStreams.has(key)) {
-    const client = await clientPromise;
+    const client = await getClientPromise();
     const db = client.db(dbName);
 
     const filterEJSON = EJSON.parse(JSON.stringify(filter));
@@ -47,4 +49,4 @@ async function getChangeStream(filter, key) {
   return changeStreams.get(key);
 }
 
-export { clientPromise, getChangeStream };
+export { getClientPromise as clientPromise, getChangeStream };
