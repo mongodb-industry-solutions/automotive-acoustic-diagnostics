@@ -8,26 +8,39 @@ import { ObjectId } from "bson";
 
 const AnalyticsDashboard = ({ vehicleId }) => {
   const [rendered, setRendered] = useState(false);
+  const [dashboard, setDashboard] = useState(null);
   const dashboardDiv = useRef(null);
   const sseConnection = useRef(null);
   const sessionId = useRef(uuidv4());
 
-  const baseUrl = process.env.NEXT_PUBLIC_CHARTS_BASE_URL;
-  const dashboardId = process.env.NEXT_PUBLIC_CHARTS_DASHBOARD_ID;
-
-  const sdk = new ChartsEmbedSDK({ baseUrl: baseUrl });
-
-  const [dashboard] = useState(
-    sdk.createDashboard({
-      dashboardId: dashboardId,
-      widthMode: "scale",
-      filter: {},
-      heightMode: "scale",
-      background: "#fff",
-    })
-  );
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch("/api/config");
+        if (response.ok) {
+          const config = await response.json();
+          if (config.chartsBaseUrl && config.chartsDashboardId) {
+            const sdk = new ChartsEmbedSDK({ baseUrl: config.chartsBaseUrl });
+            const newDashboard = sdk.createDashboard({
+              dashboardId: config.chartsDashboardId,
+              widthMode: "scale",
+              filter: {},
+              heightMode: "scale",
+              background: "#fff",
+            });
+            setDashboard(newDashboard);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching config:", error);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   const listenToSSEUpdates = useCallback(() => {
+    if (!dashboard) return null;
+    
     const collection = "results";
     console.log("Listening to SSE updates for collection " + collection);
     const eventSource = new EventSource(
@@ -57,6 +70,8 @@ const AnalyticsDashboard = ({ vehicleId }) => {
   }, [dashboard, vehicleId]);
 
   useEffect(() => {
+    if (!dashboard || !dashboardDiv.current) return;
+
     if (!rendered) {
       dashboard
         .render(dashboardDiv.current)
@@ -75,7 +90,7 @@ const AnalyticsDashboard = ({ vehicleId }) => {
         console.log("SSE connection closed.");
       }
     };
-  }, [dashboard, listenToSSEUpdates]);
+  }, [dashboard, rendered, listenToSSEUpdates]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -92,7 +107,7 @@ const AnalyticsDashboard = ({ vehicleId }) => {
   }, [sseConnection]);
 
   useEffect(() => {
-    if (vehicleId) {
+    if (vehicleId && dashboard) {
       dashboard
         .setFilter({
           $or: [
