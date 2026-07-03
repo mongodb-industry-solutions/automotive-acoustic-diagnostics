@@ -15,3 +15,5 @@ docker-compose.yml
 Makefile
 ecs-params.yml
 policy.json
+utils/lambda/.lambda-build/
+utils/lambda/function.zip
