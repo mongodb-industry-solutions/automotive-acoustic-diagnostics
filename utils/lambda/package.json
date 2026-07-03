@@ -12,5 +12,8 @@
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.817.0",
     "mongodb": "^6.16.0"
+  },
+  "overrides": {
+    "fast-xml-parser": "4.5.4"
   }
 }
