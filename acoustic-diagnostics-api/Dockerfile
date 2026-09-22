@@ -17,9 +17,21 @@ RUN apt-get update && \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
+# The pip shipped with python:3.9-slim (23.0.1) rejects wheels whose metadata
+# name differs in case or separator from the requested name - it discards e.g.
+# typing_extensions, falls back to the sdist, and then needs a build backend.
+RUN pip install --no-cache-dir --upgrade pip
+
 # 1. Install CPU-ONLY Torch (The massive space saver)
 # We install this BEFORE requirements to ensure dependencies utilize this version
-RUN pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+# The PyTorch index only carries torch and its own builds, so PyPI stays in the
+# list as an extra index for the pure-python dependencies (and any build
+# backend a source fallback needs). The +cpu local version is published only on
+# the PyTorch index, so pinning it keeps the CUDA build on PyPI from winning.
+RUN pip install --no-cache-dir \
+    torch==2.8.0+cpu torchaudio==2.8.0+cpu \
+    --index-url https://download.pytorch.org/whl/cpu \
+    --extra-index-url https://pypi.org/simple
 
 # 2. Install the rest of the dependencies
 COPY requirements.txt .
