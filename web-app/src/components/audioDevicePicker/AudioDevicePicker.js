@@ -6,6 +6,18 @@ const AudioDevicePicker = ({ deviceId, setDeviceId, recording }) => {
   const [devices, setDevices] = useState([]);
 
   useEffect(() => {
+    // navigator.mediaDevices only exists in a secure context (HTTPS or
+    // localhost). On a plain-HTTP origin it is undefined, and reading
+    // .getUserMedia off it throws synchronously - an uncaught throw here takes
+    // down the whole page, so bail out and leave the picker empty instead.
+    if (!navigator.mediaDevices?.getUserMedia) {
+      console.warn(
+        "Microphone unavailable: getUserMedia is unsupported or the page " +
+          "is not served over HTTPS or localhost."
+      );
+      return;
+    }
+
     // Request permission to access audio devices
     navigator.mediaDevices
       .getUserMedia({ audio: true })
