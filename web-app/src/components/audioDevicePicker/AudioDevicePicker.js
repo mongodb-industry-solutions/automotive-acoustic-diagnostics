@@ -12,8 +12,8 @@ const AudioDevicePicker = ({ deviceId, setDeviceId, recording }) => {
     // down the whole page, so bail out and leave the picker empty instead.
     if (!navigator.mediaDevices?.getUserMedia) {
       console.warn(
-        "Microphone unavailable: navigator.mediaDevices is undefined. " +
-          "This page must be served over HTTPS or localhost."
+        "Microphone unavailable: getUserMedia is unsupported or the page " +
+          "is not served over HTTPS or localhost."
       );
       return;
     }
