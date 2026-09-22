@@ -293,7 +293,7 @@ This project includes third-party packages listed below:
 - **Author**: Thomas Moreau
 - **Repository**: https://github.com/joblib/threadpoolctl
 
-### torch@2.7.1
+### torch@2.8.0
 - **License**: BSD License
 - **Author**: PyTorch Team
 - **Repository**: https://pytorch.org/
